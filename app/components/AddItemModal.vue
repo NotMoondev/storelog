@@ -182,7 +182,7 @@ onMounted(() => {
     height: 28px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -227,7 +227,7 @@ onMounted(() => {
     border-radius: 8px;
     padding: 12px 14px;
     font-family: "DM Mono", monospace;
-    font-size: 14px;
+    font-size: 16px;
     color: var(--text-primary);
     outline: none;
     width: 100%;
@@ -286,7 +286,7 @@ onMounted(() => {
     position: absolute;
     left: 0;
     right: 0;
-    top: 5rem;
+    top: 100%;
     z-index: 200;
     background: var(--bg-elevated);
     border: 1px solid var(--accent);
@@ -352,7 +352,7 @@ onMounted(() => {
     padding: 16px;
     text-align: center;
     color: var(--text-muted);
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .modal-footer {

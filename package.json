@@ -9,9 +9,11 @@
     "preview": "nuxt preview"
   },
   "dependencies": {
+    "@types/node": "^25.6.0",
     "@vite-pwa/nuxt": "^0.10.5",
     "dexie": "^4.0.8",
     "fuse.js": "^7.0.0",
+    "lucide-vue-next": "^1.0.0",
     "nuxt": "^4.0.0",
     "nuxt-lucide-icons": "2.1.0",
     "vue": "^3.5.0"

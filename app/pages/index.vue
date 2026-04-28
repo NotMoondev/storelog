@@ -2,7 +2,8 @@
     <AppShell :active-tab="activeTab" @tab-change="activeTab = $event">
         <Transition name="view" mode="out-in">
             <SearchView v-if="activeTab === 'search'" key="search" @add-item="addItemModal = true" />
-            <LocationsView v-else key="locations" />
+            <LocationsView v-else-if="activeTab === 'locations'" key="locations" />
+            <SettingsView v-else key="settings" />
         </Transition>
 
         <AddItemModal v-if="addItemModal" @close="addItemModal = false" @saved="addItemModal = false" />

@@ -11,9 +11,8 @@
             <nav class="header-nav">
                 <button v-for="tab in tabs" :key="tab.id" class="nav-tab" :class="{ active: activeTab === tab.id }"
                     @click="$emit('tab-change', tab.id)">
-                    <IconSearch :size="16" class="nav-icon" v-if="tab.id === 'search'" />
-                    <IconMapPin :size="16" class="nav-icon" v-else-if="tab.id === 'locations'" />
-                    <span class="nav-label">{{ tab.label }}</span>
+                    <component :is="tab.icon" :size="16" class="nav-icon" />
+                    <span class="nav-label" v-if="tab.label">{{ tab.label }}</span>
                 </button>
             </nav>
         </header>
@@ -26,6 +25,8 @@
 </template>
 
 <script setup lang="ts">
+import { Search, MapPin, Settings } from 'lucide-vue-next'
+
 defineProps<{
     activeTab: string;
 }>();
@@ -35,8 +36,9 @@ defineEmits<{
 }>();
 
 const tabs = [
-    { id: "search", label: "Suche" },
-    { id: "locations", label: "Orte" },
+    { id: "search", label: "Suche", icon: Search },
+    { id: "locations", label: "Orte", icon: MapPin },
+    { id: "settings", icon: Settings },
 ];
 </script>
 
@@ -75,7 +77,7 @@ const tabs = [
 
 .brand-icon {
     color: var(--accent);
-    font-size: 16px;
+    font-size: 20px;
 }
 
 .header-nav {
@@ -90,7 +92,7 @@ const tabs = [
     padding: 6px 12px;
     border-radius: 6px;
     font-family: "DM Mono", monospace;
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-secondary);
     background: transparent;
     border: none;
@@ -110,7 +112,7 @@ const tabs = [
 }
 
 .nav-icon {
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .app-content {

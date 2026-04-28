@@ -1,4 +1,19 @@
 import tailwindcss from "@tailwindcss/vite"
+import { execSync } from "node:child_process"
+
+function getAppVersion(): string {
+    if (process.env.APP_VERSION) return process.env.APP_VERSION
+    try {
+        return execSync('git describe --tags --match "v*.*.*" --abbrev=0', { stdio: ['pipe', 'pipe', 'pipe'] })
+            .toString()
+            .trim()
+    } catch {
+        return 'dev'
+    }
+}
+
+const appVersion = getAppVersion()
+
 
 export default defineNuxtConfig({
     compatibilityDate: "2024-11-01",
@@ -8,6 +23,12 @@ export default defineNuxtConfig({
 
     vite: {
         plugins: [tailwindcss()],
+    },
+
+    runtimeConfig: {
+        public: {
+            appVersion,
+        },
     },
 
     modules: ["@vite-pwa/nuxt", "nuxt-lucide-icons"],
@@ -40,7 +61,7 @@ export default defineNuxtConfig({
             globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
         },
         devOptions: {
-            enabled: true,
+            enabled: false,
             suppressWarnings: true,
             navigateFallbackAllowlist: [/^\/$/],
             type: "module",

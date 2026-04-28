@@ -41,7 +41,7 @@
             <!-- Empty state -->
             <div v-if="results.length === 0 && !loading" class="empty-state">
                 <div class="empty-icon">
-                    ¯\_(ツ)_/¯
+                    <IconPackageOpen :size="64" />
                 </div>
                 <div class="empty-title">
                     {{ query ? 'Nichts gefunden' : 'Noch keine Gegenstände' }}
@@ -123,7 +123,7 @@ onMounted(() => {
 
 .search-icon {
     color: var(--text-muted);
-    font-size: 16px;
+    font-size: 20px;
     flex-shrink: 0;
 }
 
@@ -147,7 +147,7 @@ onMounted(() => {
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     padding: 4px;
     border-radius: 4px;
     transition: color 0.1s;

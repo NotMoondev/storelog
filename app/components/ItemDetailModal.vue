@@ -253,7 +253,7 @@ function formatDate(ts: number): string {
     height: 28px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -274,7 +274,7 @@ function formatDate(ts: number): string {
 }
 
 .loc-label {
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .loc-path {
@@ -347,12 +347,12 @@ function formatDate(ts: number): string {
 }
 
 .selected-location {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--accent);
 }
 
 .placeholder-text {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-muted);
 }
 
@@ -377,7 +377,7 @@ function formatDate(ts: number): string {
     border-bottom: 1px solid var(--border-subtle);
     padding: 8px 12px;
     font-family: "DM Mono", monospace;
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-primary);
     outline: none;
 }
@@ -393,7 +393,7 @@ function formatDate(ts: number): string {
 
 .location-option {
     padding: 8px 12px;
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.1s;

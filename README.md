@@ -1,75 +1,34 @@
-# Nuxt Minimal Starter
+# StoreLog
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+StoreLog ist eine Progressive Web App zur Verwaltung persönlicher Gegenstände und deren Aufbewahrungsorte. Ziel ist es, schnell herauszufinden, wo sich ein bestimmter Gegenstand befindet.
 
-## Setup
+## Funktionen
 
-Make sure to install dependencies:
+### Sofortsuche
+Eingabe eines Gegenstandsnamens zeigt unmittelbar den zugehörigen Aufbewahrungsort.
+
+### Verschachtelte Orte
+Hierarchische Struktur von Orten, z. B. Zimmer → Schrank → Schublade → Box.
+
+### Schnelles Hinzufügen
+Gegenstände können mit minimalem Aufwand erfasst werden: Name eingeben, Ort auswählen, speichern.
+
+### Offline-Nutzung
+Die Anwendung funktioniert vollständig ohne Internetverbindung. Alle Daten werden lokal gespeichert.
+
+### Installierbar als App
+Die Anwendung kann über den Browser auf dem Gerät installiert und wie eine native App genutzt werden.
+
+### Datensicherung
+Export und Import der Daten im JSON-Format zur Sicherung und Wiederherstellung.
+
+## Entwicklung
 
 ```bash
-# npm
-npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
 bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
 bun run dev
 ```
 
-## Production
+## Lizenz
 
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Dieses Projekt steht unter der GNU General Public License v3.0 (GPLv3).
