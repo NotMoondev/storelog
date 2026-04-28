@@ -3,7 +3,9 @@
         <!-- Search bar -->
         <div class="search-bar-container">
             <div class="search-bar">
-                <span class="search-icon">◎</span>
+                <span class="search-icon">
+                    <IconSearch :size="16" />
+                </span>
                 <input ref="inputRef" v-model="query" type="text" placeholder="Suchen..." class="search-input"
                     autocomplete="off" autocorrect="off" spellcheck="false" />
                 <button v-if="query" class="search-clear" @click="clearQuery">✕</button>
@@ -27,7 +29,9 @@
                     </div>
                     <div class="result-path">
                         <span v-for="(seg, i) in item.locationNames" :key="i" class="path-segment">
-                            <span v-if="i > 0" class="path-sep">›</span>
+                            <span v-if="i > 0" class="path-sep">
+                                <IconChevronRight :size="10" />
+                            </span>
                             {{ seg }}
                         </span>
                     </div>

@@ -68,7 +68,7 @@
                     <div class="mini-modal-title">
                         {{ locationDetail.location?.name }}
                     </div>
-                    <div class="mini-parent-hint" v-if="locationDetail.location">
+                    <div class="mini-parent-hint" v-if="locationDetail.location && locationDetail.location.parentId">
                         {{ getLocationPath(locationDetail.location.id).join(' > ') }}
                     </div>
                     <div v-if="locationItems.length === 0" class="empty-sub" style="margin:16px 0;">

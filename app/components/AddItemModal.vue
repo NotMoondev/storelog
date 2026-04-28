@@ -36,7 +36,9 @@
                                     :class="{ selected: form.locationId === loc.id }"
                                     :style="{ paddingLeft: `${12 + loc.indent * 16}px` }"
                                     @click.stop="selectLocation(loc)">
-                                    <span class="loc-indent-icon" v-if="loc.indent > 0">└</span>
+                                    <span class="loc-indent-icon" v-if="loc.indent > 0">
+                                        <IconCornerDownRight :size="10" />
+                                    </span>
                                     {{ loc.name }}
                                 </div>
                                 <div v-if="filteredLocations.length === 0" class="loc-empty">
@@ -292,7 +294,9 @@ onMounted(() => {
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     overflow: hidden;
+    overflow-y: auto;
     box-shadow: 0 0 0 3px var(--accent-glow);
+    max-height: 20dvh;
 }
 
 .location-search {
