@@ -1,35 +1,35 @@
 @import "tailwindcss";
 
 @theme {
-    --color-bg: #0b0b0b;
-    --color-bg-surface: #111111;
-    --color-bg-elevated: #1a1a1a;
-    --color-bg-hover: #222222;
-    --color-border: #252525;
-    --color-border-subtle: #1c1c1c;
+    --color-bg: #1c1c1e;
+    --color-bg-surface: #252528;
+    --color-bg-elevated: #2e2e32;
+    --color-bg-hover: #38383d;
+    --color-border: #3a3a3f;
+    --color-border-subtle: #2e2e32;
     --color-accent: #4ec778;
     --color-accent-dim: rgba(69, 163, 102, 0.20);
     --color-accent-glow: rgba(69, 163, 102, 0.08);
-    --color-text-primary: #f0f0f0;
-    --color-text-secondary: #cbcbcb;
-    --color-text-muted: #797979;
+    --color-text-primary: #f5f5f5;
+    --color-text-secondary: #d4d4d4;
+    --color-text-muted: #909090;
     --color-danger: #c0392b;
     --color-danger-dim: rgba(192, 57, 43, 0.15);
 }
 
 :root {
-    --bg: #0b0b0b;
-    --bg-surface: #111111;
-    --bg-elevated: #1a1a1a;
-    --bg-hover: #222222;
-    --border: #252525;
-    --border-subtle: #1c1c1c;
+    --bg: #1c1c1e;
+    --bg-surface: #252528;
+    --bg-elevated: #2e2e32;
+    --bg-hover: #38383d;
+    --border: #3a3a3f;
+    --border-subtle: #2e2e32;
     --accent: #4ec778;
     --accent-dim: rgba(69, 163, 102, 0.20);
     --accent-glow: rgba(69, 163, 102, 0.08);
-    --text-primary: #f0f0f0;
-    --text-secondary: #cbcbcb;
-    --text-muted: #797979;
+    --text-primary: #f5f5f5;
+    --text-secondary: #d4d4d4;
+    --text-muted: #909090;
     --danger: #c0392b;
     --danger-dim: rgba(192, 57, 43, 0.15);
 }
