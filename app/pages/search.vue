@@ -63,7 +63,7 @@
         </div>
 
         <!-- FAB -->
-        <button @click="$emit('add-item')"
+        <button @click="isAddModalOpen = true"
             class="fixed bottom-7 right-5 w-14 h-14 rounded-full bg-accent text-white text-[26px] border-none cursor-pointer flex items-center justify-center shadow-[0_4px_20px_rgba(69,163,102,0.4)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] z-50 animate-[pulse-accent_3s_ease_infinite] hover:scale-[1.08] hover:shadow-[0_6px_28px_rgba(69,163,102,0.55)] active:scale-95">
             <span class="leading-none -mt-0.5">+</span>
         </button>
@@ -72,35 +72,38 @@
         <ItemDetailModal v-if="selectedItem" :item="selectedItem" @close="selectedItem = null"
             @deleted="selectedItem = null" />
 
+        <AddItemModal v-if="isAddModalOpen" @close="isAddModalOpen = false" @saved="isAddModalOpen = false" />
     </div>
 </template>
 
 <script setup lang="ts">
-import type { ItemWithPath } from "~/types";
-import { useSearch } from "~/composables/useSearch";
-import { useItems } from "~/composables/useItems";
+import type { ItemWithPath } from "~/types"
+import { useSearch } from "~/composables/useSearch"
+import { useItems } from "~/composables/useItems"
 
 defineEmits<{
-    "add-item": [];
-}>();
+    "add-item": []
+}>()
 
-const { items, loading } = useItems();
-const { query, results, clearQuery } = useSearch();
-const inputRef = ref<HTMLInputElement>();
-const listRef = ref<HTMLElement>();
-const selectedItem = ref<ItemWithPath | null>(null);
+const { items, loading } = useItems()
+const { query, results, clearQuery } = useSearch()
+const inputRef = ref<HTMLInputElement>()
+const listRef = ref<HTMLElement>()
+const selectedItem = ref<ItemWithPath | null>(null)
+
+const isAddModalOpen = ref(false)
 
 function openItem(item: ItemWithPath) {
-    selectedItem.value = item;
+    selectedItem.value = item
 }
 
 onMounted(() => {
-    nextTick(() => inputRef.value?.focus());
-});
+    nextTick(() => inputRef.value?.focus())
+})
 </script>
 
 <style>
 .result-list-move {
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease
 }
 </style>
