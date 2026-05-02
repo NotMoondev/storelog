@@ -1,17 +1,16 @@
-// composables/useLocations.ts
-import { locationRepository } from "~/repositories/locationRepository";
-import type { Location, LocationNode } from "~/types";
+import { locationRepository } from "~/repositories/locationRepository"
+import type { Location, LocationNode } from "~/types"
 
 export function useLocations() {
-  const locations = useState<Location[]>("locations", () => []);
-  const loading = ref(false);
+  const locations = useState<Location[]>("locations", () => [])
+  const loading = ref(false)
 
   async function load() {
-    loading.value = true;
+    loading.value = true
     try {
-      locations.value = await locationRepository.getAll();
+      locations.value = await locationRepository.getAll()
     } finally {
-      loading.value = false;
+      loading.value = false
     }
   }
 
@@ -19,19 +18,19 @@ export function useLocations() {
     name: string,
     parentId: string | null
   ): Promise<Location> {
-    const loc = await locationRepository.create({ name, parentId });
-    locations.value = await locationRepository.getAll();
-    return loc;
+    const loc = await locationRepository.create({ name, parentId })
+    locations.value = await locationRepository.getAll()
+    return loc
   }
 
   async function updateLocation(id: string, name: string): Promise<void> {
-    await locationRepository.update(id, { name });
-    locations.value = await locationRepository.getAll();
+    await locationRepository.update(id, { name })
+    locations.value = await locationRepository.getAll()
   }
 
   async function deleteLocation(id: string): Promise<void> {
-    await locationRepository.delete(id);
-    locations.value = await locationRepository.getAll();
+    await locationRepository.delete(id)
+    locations.value = await locationRepository.getAll()
   }
 
   function buildTree(parentId: string | null = null, depth = 0): LocationNode[] {
@@ -42,35 +41,35 @@ export function useLocations() {
         ...l,
         depth,
         children: buildTree(l.id, depth + 1),
-      }));
+      }))
   }
 
   function getLocationPath(locationId: string): string[] {
-    const path: string[] = [];
-    let current = locations.value.find((l) => l.id === locationId);
+    const path: string[] = []
+    let current = locations.value.find((l) => l.id === locationId)
     while (current) {
-      path.unshift(current.name);
+      path.unshift(current.name)
       current = current.parentId
         ? locations.value.find((l) => l.id === current!.parentId)
-        : undefined;
+        : undefined
     }
-    return path;
+    return path
   }
 
   function flattenTree(
     nodes: LocationNode[] = [],
     depth = 0
   ): (LocationNode & { indent: number })[] {
-    const result: (LocationNode & { indent: number })[] = [];
+    const result: (LocationNode & { indent: number })[] = []
     for (const node of nodes) {
-      result.push({ ...node, indent: depth });
-      result.push(...flattenTree(node.children, depth + 1));
+      result.push({ ...node, indent: depth })
+      result.push(...flattenTree(node.children, depth + 1))
     }
-    return result;
+    return result
   }
 
-  const tree = computed(() => buildTree(null));
-  const flatList = computed(() => flattenTree(tree.value));
+  const tree = computed(() => buildTree(null))
+  const flatList = computed(() => flattenTree(tree.value))
 
   return {
     locations,
@@ -82,5 +81,5 @@ export function useLocations() {
     updateLocation,
     deleteLocation,
     getLocationPath,
-  };
+  }
 }

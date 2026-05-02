@@ -1,18 +1,17 @@
-// composables/useModal.ts
 export function useModal() {
-  const isOpen = ref(false);
+  const isOpen = ref(false)
 
   function open() {
-    isOpen.value = true;
+    isOpen.value = true
   }
 
   function close() {
-    isOpen.value = false;
+    isOpen.value = false
   }
 
   function toggle() {
-    isOpen.value = !isOpen.value;
+    isOpen.value = !isOpen.value
   }
 
-  return { isOpen, open, close, toggle };
+  return { isOpen, open, close, toggle }
 }
