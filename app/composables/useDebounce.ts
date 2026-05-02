@@ -1,11 +1,10 @@
-// composables/useDebounce.ts
 export function useDebounceFn<T extends (...args: unknown[]) => unknown>(
   fn: T,
   delay: number
 ): (...args: Parameters<T>) => void {
-  let timer: ReturnType<typeof setTimeout> | null = null;
+  let timer: ReturnType<typeof setTimeout> | null = null
   return (...args: Parameters<T>) => {
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => fn(...args), delay);
-  };
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => fn(...args), delay)
+  }
 }

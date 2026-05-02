@@ -1,4 +1,3 @@
-// composables/useDataTransfer.ts
 import type { Location, Item } from '~/types'
 import { useDB } from '~/repositories/db'
 

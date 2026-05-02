@@ -1,51 +1,65 @@
 <template>
     <Teleport to="body">
-        <div class="modal-overlay" @click.self="$emit('close')">
-            <div class="modal animate-slide-up">
+        <div class="fixed inset-0 bg-black/75 backdrop-blur-xs z-100 flex items-end justify-center"
+            @click.self="$emit('close')">
+            <div
+                class="bg-bg-surface border border-border rounded-[20px_20px_0_0] w-full max-w-140 max-h-[88dvh] overflow-y-auto pb-[env(safe-area-inset-bottom,0)] animate-slide-up">
+
                 <!-- Header -->
-                <div class="modal-header">
-                    <div class="item-icon">
+                <div class="flex items-center gap-3 px-5 pt-5 pb-3.5 border-b border-border-subtle">
+                    <div class="text-accent shrink-0">
                         <IconBox :size="20" />
                     </div>
-                    <div class="header-text">
-                        <div v-if="!editing" class="item-name">{{ localItem.name }}</div>
-                        <input v-else ref="nameRef" v-model="editForm.name" class="edit-name-input"
+                    <div class="flex-1">
+                        <div v-if="!editing" class="font-['Syne'] text-[20px] font-bold text-text-primary">{{
+                            localItem.name }}</div>
+                        <input v-else ref="nameRef" v-model="editForm.name"
+                            class="font-['Syne'] text-[20px] font-bold text-text-primary bg-bg-elevated border border-accent rounded-md px-2 py-1 w-full outline-none"
                             @keydown.enter="saveEdit" />
                     </div>
-                    <button class="modal-close" @click="$emit('close')">✕</button>
+                    <button @click="$emit('close')"
+                        class="bg-bg-elevated border border-border text-text-secondary w-7 h-7 rounded-md cursor-pointer text-sm flex items-center justify-center shrink-0 transition-all hover:text-text-primary">✕</button>
                 </div>
 
                 <!-- Location path -->
-                <div class="location-display">
-                    <span class="loc-label">
-                        <IconMapPin :size="14" class="text-accent/60" />
+                <div class="flex items-center gap-2 px-5 py-3.5 border-b border-border-subtle">
+                    <span class="text-accent/60">
+                        <IconMapPin :size="14" />
                     </span>
-                    <span class="loc-path">{{ locationPath }}</span>
+                    <span class="text-[13px] text-accent tracking-[0.02em]">{{ locationPath }}</span>
                 </div>
 
                 <!-- Note -->
-                <div v-if="localItem.note && !editing" class="note-display">
+                <div v-if="localItem.note && !editing"
+                    class="px-5 py-3 text-[13px] text-text-secondary italic border-b border-border-subtle">
                     {{ localItem.note }}
                 </div>
 
                 <!-- Edit form -->
-                <div v-if="editing" class="edit-form">
-                    <div class="field">
-                        <label class="field-label">Ort</label>
-                        <div class="location-selector" :class="{ open: locationPickerOpen }"
-                            @click="locationPickerOpen = !locationPickerOpen">
-                            <span v-if="selectedEditLocation" class="selected-location">
+                <div v-if="editing" class="px-5 py-4 flex flex-col gap-3.5 border-b border-border-subtle">
+
+                    <!-- Location field -->
+                    <div class="flex flex-col gap-1.5 relative">
+                        <label class="text-[11px] text-text-secondary tracking-[0.08em] uppercase">Ort</label>
+                        <div @click="locationPickerOpen = !locationPickerOpen"
+                            class="flex items-center justify-between bg-bg-elevated border border-border rounded-lg px-3 py-2.5 cursor-pointer min-h-10.5 transition-all"
+                            :class="locationPickerOpen ? 'border-accent rounded-b-none' : ''">
+                            <span v-if="selectedEditLocation" class="text-sm text-accent">
                                 {{ getLocationPath(selectedEditLocation.id).join(" / ") }}
                             </span>
-                            <span v-else class="placeholder-text">Ort auswählen...</span>
-                            <span class="selector-arrow">{{ locationPickerOpen ? '▲' : '▼' }}</span>
+                            <span v-else class="text-sm text-text-muted">Ort auswählen...</span>
+                            <span class="text-[10px] text-text-muted">{{ locationPickerOpen ? '▲' : '▼' }}</span>
                         </div>
-                        <div v-if="locationPickerOpen" class="location-picker">
+                        <div v-if="locationPickerOpen"
+                            class="bg-bg-elevated border border-accent border-t-0 rounded-b-lg">
                             <input v-model="locationSearch" type="text" placeholder="Ort suchen..."
-                                class="location-search" @click.stop />
-                            <div class="location-list">
-                                <div v-for="loc in filteredLocations" :key="loc.id" class="location-option"
-                                    :class="{ selected: editForm.locationId === loc.id }"
+                                class="block w-full bg-transparent border-none border-b border-border-subtle px-3 py-2 font-['DM_Mono'] text-sm text-text-primary outline-none placeholder:text-text-muted"
+                                @click.stop />
+                            <div class="max-h-40 overflow-y-auto">
+                                <div v-for="loc in filteredLocations" :key="loc.id"
+                                    class="py-2 pr-3 text-sm cursor-pointer transition-all" :class="editForm.locationId === loc.id
+                                        ? 'text-accent bg-accent-dim'
+                                        : 'text-text-secondary hover:bg-bg-hover hover:text-text-primary'"
                                     :style="{ paddingLeft: `${12 + loc.indent * 16}px` }"
                                     @click.stop="selectEditLocation(loc)">
                                     {{ loc.name }}
@@ -53,31 +67,38 @@
                             </div>
                         </div>
                     </div>
-                    <div class="field">
-                        <label class="field-label">Notiz</label>
-                        <input v-model="editForm.note" type="text" placeholder="Notiz..." class="field-input"
+
+                    <!-- Note field -->
+                    <div class="flex flex-col gap-1.5">
+                        <label class="text-[11px] text-text-secondary tracking-[0.08em] uppercase">Notiz</label>
+                        <input v-model="editForm.note" type="text" placeholder="Notiz..."
+                            class="bg-bg-elevated border border-border rounded-lg px-3 py-2.5 font-['DM_Mono'] text-[13px] text-text-primary outline-none transition-colors focus:border-accent"
                             @keydown.enter="saveEdit" />
                     </div>
                 </div>
 
                 <!-- Meta -->
-                <div class="item-meta">
+                <div class="px-5 py-3 text-[11px] text-text-muted tracking-[0.02em]">
                     Hinzugefügt: {{ formatDate(localItem.createdAt) }}
                 </div>
 
-                <!-- Actions -->
-                <div class="modal-footer">
+                <!-- Footer -->
+                <div class="px-5 pt-3.5 pb-5 flex gap-2.5 border-t border-border-subtle">
                     <template v-if="!editing">
-                        <button class="btn-danger" @click="confirmDelete">Löschen</button>
-                        <button class="btn-primary" @click="startEdit">Bearbeiten</button>
+                        <button @click="confirmDelete"
+                            class="flex-1 py-3 rounded-lg font-['DM_Mono'] text-[13px] cursor-pointer border transition-all bg-danger-dim text-danger border-danger/30 hover:bg-danger hover:text-white hover:border-danger">Löschen</button>
+                        <button @click="startEdit"
+                            class="flex-1 py-3 rounded-lg font-['DM_Mono'] text-[13px] cursor-pointer border-none transition-all bg-accent text-white hover:brightness-110">Bearbeiten</button>
                     </template>
                     <template v-else>
-                        <button class="btn-secondary" @click="cancelEdit">Abbrechen</button>
-                        <button class="btn-primary" @click="saveEdit" :disabled="saving">
-                            {{ saving ? "..." : "Speichern" }}
-                        </button>
+                        <button @click="cancelEdit"
+                            class="flex-1 py-3 rounded-lg font-['DM_Mono'] text-[13px] cursor-pointer transition-all bg-bg-elevated text-text-secondary border border-border hover:bg-bg-hover">Abbrechen</button>
+                        <button @click="saveEdit" :disabled="saving"
+                            class="flex-1 py-3 rounded-lg font-['DM_Mono'] text-[13px] cursor-pointer border-none transition-all bg-accent text-white hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed">{{
+                                saving ? "..." : "Speichern" }}</button>
                     </template>
                 </div>
+
             </div>
         </div>
     </Teleport>
@@ -88,9 +109,7 @@ import type { ItemWithPath } from "~/types";
 import { useLocations } from "~/composables/useLocations";
 import { useItems } from "~/composables/useItems";
 
-const props = defineProps<{
-    item: ItemWithPath;
-}>();
+const props = defineProps<{ item: ItemWithPath }>();
 
 const emit = defineEmits<{
     close: [];
@@ -113,356 +132,64 @@ const editForm = reactive({
     note: props.item.note || "",
 });
 
-const locationPath = computed(() =>
-    getLocationPath(localItem.value.locationId).join(" / ")
-);
-
-const selectedEditLocation = computed(() =>
-    flatList.value.find((l) => l.id === editForm.locationId)
-);
-
+const locationPath = computed(() => getLocationPath(localItem.value.locationId).join(" / "))
+const selectedEditLocation = computed(() => flatList.value.find((l) => l.id === editForm.locationId))
 const filteredLocations = computed(() => {
-    if (!locationSearch.value) return flatList.value;
-    const q = locationSearch.value.toLowerCase();
-    return flatList.value.filter((l) => l.name.toLowerCase().includes(q));
-});
+    if (!locationSearch.value) return flatList.value
+    const q = locationSearch.value.toLowerCase()
+    return flatList.value.filter((l) => l.name.toLowerCase().includes(q))
+})
 
 function selectEditLocation(loc: (typeof flatList.value)[0]) {
-    editForm.locationId = loc.id;
-    locationPickerOpen.value = false;
+    editForm.locationId = loc.id
+    locationPickerOpen.value = false
 }
 
 function startEdit() {
-    editing.value = true;
-    nextTick(() => nameRef.value?.focus());
+    editing.value = true
+    nextTick(() => nameRef.value?.focus())
 }
 
 function cancelEdit() {
-    editing.value = false;
-    editForm.name = localItem.value.name;
-    editForm.locationId = localItem.value.locationId;
-    editForm.note = localItem.value.note || "";
+    editing.value = false
+    editForm.name = localItem.value.name
+    editForm.locationId = localItem.value.locationId
+    editForm.note = localItem.value.note || ""
 }
 
 async function saveEdit() {
-    if (!editForm.name.trim() || saving.value) return;
-    saving.value = true;
+    if (!editForm.name.trim() || saving.value) return
+    saving.value = true
     try {
         await updateItem(localItem.value.id, {
             name: editForm.name.trim(),
             locationId: editForm.locationId,
             note: editForm.note.trim() || undefined,
-        });
+        })
         localItem.value = {
             ...localItem.value,
             name: editForm.name.trim(),
             locationId: editForm.locationId,
             note: editForm.note.trim() || undefined,
-        };
-        editing.value = false;
+        }
+        editing.value = false
     } finally {
-        saving.value = false;
+        saving.value = false
     }
 }
 
 async function confirmDelete() {
     if (confirm(`„${localItem.value.name}" wirklich löschen?`)) {
-        await deleteItem(localItem.value.id);
-        emit("deleted");
-        emit("close");
+        await deleteItem(localItem.value.id)
+        emit("deleted")
+        emit("close")
     }
 }
 
 function formatDate(ts: number): string {
     return new Intl.DateTimeFormat("de-DE", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-    }).format(new Date(ts));
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit",
+    }).format(new Date(ts))
 }
 </script>
-
-<style scoped>
-.modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(4px);
-    z-index: 100;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-}
-
-.modal {
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
-    border-radius: 20px 20px 0 0;
-    width: 100%;
-    max-width: 560px;
-    max-height: 88dvh;
-    overflow-y: auto;
-    padding-bottom: env(safe-area-inset-bottom, 0);
-}
-
-.modal-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 20px 20px 14px;
-    border-bottom: 1px solid var(--border-subtle);
-}
-
-.item-icon {
-    font-size: 22px;
-    color: var(--accent);
-    flex-shrink: 0;
-}
-
-.header-text {
-    flex: 1;
-}
-
-.item-name {
-    font-family: "Syne", sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.edit-name-input {
-    font-family: "Syne", sans-serif;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--text-primary);
-    background: var(--bg-elevated);
-    border: 1px solid var(--accent);
-    border-radius: 6px;
-    padding: 4px 8px;
-    width: 100%;
-    outline: none;
-}
-
-.modal-close {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    color: var(--text-secondary);
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.1s;
-}
-
-.modal-close:hover {
-    color: var(--text-primary);
-}
-
-.location-display {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border-subtle);
-}
-
-.loc-label {
-    font-size: 16px;
-}
-
-.loc-path {
-    font-size: 13px;
-    color: var(--accent);
-    letter-spacing: 0.02em;
-}
-
-.note-display {
-    padding: 12px 20px;
-    font-size: 13px;
-    color: var(--text-secondary);
-    font-style: italic;
-    border-bottom: 1px solid var(--border-subtle);
-}
-
-.edit-form {
-    padding: 16px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    border-bottom: 1px solid var(--border-subtle);
-}
-
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    position: relative;
-}
-
-.field-label {
-    font-size: 11px;
-    color: var(--text-secondary);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.field-input {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-family: "DM Mono", monospace;
-    font-size: 13px;
-    color: var(--text-primary);
-    outline: none;
-}
-
-.field-input:focus {
-    border-color: var(--accent);
-}
-
-.location-selector {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    cursor: pointer;
-    min-height: 42px;
-}
-
-.location-selector.open {
-    border-color: var(--accent);
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
-.selected-location {
-    font-size: 14px;
-    color: var(--accent);
-}
-
-.placeholder-text {
-    font-size: 14px;
-    color: var(--text-muted);
-}
-
-.selector-arrow {
-    font-size: 10px;
-    color: var(--text-muted);
-}
-
-.location-picker {
-    background: var(--bg-elevated);
-    border: 1px solid var(--accent);
-    border-top: none;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
-
-.location-search {
-    display: block;
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--border-subtle);
-    padding: 8px 12px;
-    font-family: "DM Mono", monospace;
-    font-size: 14px;
-    color: var(--text-primary);
-    outline: none;
-}
-
-.location-search::placeholder {
-    color: var(--text-muted);
-}
-
-.location-list {
-    max-height: 160px;
-    overflow-y: auto;
-}
-
-.location-option {
-    padding: 8px 12px;
-    font-size: 14px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.1s;
-}
-
-.location-option:hover {
-    background: var(--bg-hover);
-    color: var(--text-primary);
-}
-
-.location-option.selected {
-    color: var(--accent);
-    background: var(--accent-dim);
-}
-
-.item-meta {
-    padding: 12px 20px;
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 0.02em;
-}
-
-.modal-footer {
-    padding: 14px 20px 20px;
-    display: flex;
-    gap: 10px;
-    border-top: 1px solid var(--border-subtle);
-}
-
-.btn-primary,
-.btn-secondary,
-.btn-danger {
-    flex: 1;
-    padding: 12px;
-    border-radius: 8px;
-    font-family: "DM Mono", monospace;
-    font-size: 13px;
-    cursor: pointer;
-    border: none;
-    transition: all 0.15s;
-}
-
-.btn-primary {
-    background: var(--accent);
-    color: #fff;
-}
-
-.btn-primary:hover:not(:disabled) {
-    filter: brightness(1.1);
-}
-
-.btn-primary:disabled {
-    opacity: 0.5;
-}
-
-.btn-secondary {
-    background: var(--bg-elevated);
-    color: var(--text-secondary);
-    border: 1px solid var(--border);
-}
-
-.btn-danger {
-    background: var(--danger-dim);
-    color: var(--danger);
-    border: 1px solid rgba(192, 57, 43, 0.3);
-}
-
-.btn-danger:hover {
-    background: var(--danger);
-    color: #fff;
-}
-</style>
