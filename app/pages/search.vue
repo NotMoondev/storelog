@@ -8,7 +8,7 @@
                 <span class="text-text-muted shrink-0">
                     <IconSearch :size="16" />
                 </span>
-                <input ref="inputRef" v-model="query" type="text" placeholder="Suchen..." autocomplete="off"
+                <input ref="inputRef" v-model="query" type="search" placeholder="Suchen..." autocomplete="off"
                     autocorrect="off" spellcheck="false"
                     class="flex-1 bg-transparent border-none outline-none text-[15px] tracking-[0.02em] text-text-primary placeholder:text-text-muted" />
                 <button v-if="query" @click="clearQuery"
@@ -85,8 +85,9 @@ defineEmits<{
     "add-item": []
 }>()
 
-const { items, loading } = useItems()
+const { items, loading, load: loadItems } = useItems()
 const { query, results, clearQuery } = useSearch()
+const { load: loadLocations } = useLocations()
 const inputRef = ref<HTMLInputElement>()
 const listRef = ref<HTMLElement>()
 const selectedItem = ref<ItemWithPath | null>(null)
@@ -98,6 +99,8 @@ function openItem(item: ItemWithPath) {
 }
 
 onMounted(() => {
+    loadItems()
+    loadLocations()
     nextTick(() => inputRef.value?.focus())
 })
 </script>

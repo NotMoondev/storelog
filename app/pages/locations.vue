@@ -17,7 +17,7 @@
                 <span class="text-text-muted shrink-0">
                     <IconMapPinSearch :size="16" />
                 </span>
-                <input v-model="searchQuery" type="text" placeholder="Orte durchsuchen..." autocomplete="off"
+                <input v-model="searchQuery" type="search" placeholder="Orte durchsuchen..." autocomplete="off"
                     spellcheck="false"
                     class="flex-1 bg-transparent border-none outline-none font-['DM_Mono'] text-[14px] text-text-primary placeholder:text-text-muted" />
                 <button v-if="searchQuery" @click="searchQuery = ''"
@@ -81,7 +81,7 @@
                                 <IconMapPin :size="16" />
                             </span>
                             <input :ref="el => { if (el) editInputRefs[loc.id] = el as HTMLInputElement }"
-                                v-model="editName"
+                                v-model="editName" autocomplete="off" type="search" spellcheck="false"
                                 class="font-['DM_Mono'] text-[15px] text-text-primary bg-transparent border-none outline-none flex-1"
                                 @keydown.enter="saveEdit(loc.id)" @keydown.escape="cancelEdit" @blur="cancelEdit" />
                         </div>
