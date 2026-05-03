@@ -3,8 +3,7 @@
         <!-- Main form sheet -->
         <div class="fixed inset-0 bg-black/75 backdrop-blur-xs z-100 flex items-end justify-center"
             @click.self="$emit('close')">
-            <div
-                class="bg-bg-surface border-t border-border rounded-t-[20px] w-full max-w-140 max-h-[92dvh] flex flex-col animate-slide-up"
+            <div class="bg-bg-surface border-t border-border rounded-t-[20px] w-full max-w-140 max-h-[92dvh] flex flex-col animate-slide-up"
                 style="padding-bottom: env(safe-area-inset-bottom, 0px)">
 
                 <!-- Drag handle -->
@@ -29,7 +28,8 @@
                         <label class="font-['DM_Mono'] text-[11px] text-text-secondary tracking-[0.08em] uppercase">
                             Name *
                         </label>
-                        <input ref="nameRef" v-model="form.name" type="text" placeholder="z. B. Ladekabel, Schlüssel..."
+                        <input ref="nameRef" v-model="form.name" type="search"
+                            placeholder="z. B. Ladekabel, Schlüssel..." autocomplete="off" spellcheck="false"
                             class="bg-bg-elevated border border-border rounded-lg px-3.5 py-3 font-['DM_Mono'] text-[14px] text-text-primary outline-none w-full transition-all placeholder:text-text-muted focus:border-accent focus:shadow-[0_0_0_3px_var(--accent-glow)]"
                             @keydown.enter="focusLocation" />
                     </div>
@@ -60,7 +60,8 @@
                             Notiz
                             <span class="text-text-muted normal-case tracking-normal">(optional)</span>
                         </label>
-                        <input v-model="form.note" type="text" placeholder="Kurze Beschreibung..."
+                        <input v-model="form.note" type="search" autocomplete="off" spellcheck="false"
+                            placeholder="Kurze Beschreibung..."
                             class="bg-bg-elevated border border-border rounded-lg px-3.5 py-3 font-['DM_Mono'] text-[14px] text-text-primary outline-none w-full transition-all placeholder:text-text-muted focus:border-accent focus:shadow-[0_0_0_3px_var(--accent-glow)]"
                             @keydown.enter="submit" />
                     </div>
@@ -108,7 +109,8 @@
                     <div
                         class="flex items-center gap-2 bg-bg-elevated border border-border rounded-lg px-3 h-10 transition-all focus-within:border-accent focus-within:shadow-[0_0_0_3px_var(--accent-glow)]">
                         <IconSearch :size="14" class="text-text-muted shrink-0" />
-                        <input ref="locationSearchRef" v-model="locationSearch" type="text" placeholder="Ort suchen..."
+                        <input ref="locationSearchRef" v-model="locationSearch" type="search"
+                            placeholder="Ort suchen..." autocomplete="off" spellcheck="false"
                             class="flex-1 bg-transparent border-none outline-none font-['DM_Mono'] text-[13px] text-text-primary placeholder:text-text-muted" />
                         <button v-if="locationSearch" @click="locationSearch = ''"
                             class="text-text-muted hover:text-text-secondary cursor-pointer">

@@ -19,7 +19,7 @@
                     <div class="flex-1">
                         <div v-if="!editing" class="font-['Syne'] text-[20px] font-bold text-text-primary">{{
                             localItem.name }}</div>
-                        <input v-else ref="nameRef" v-model="editForm.name"
+                        <input v-else ref="nameRef" v-model="editForm.name" type="search" autocomplete="off" spellcheck="false"
                             class="font-['Syne'] text-[20px] font-bold text-text-primary bg-bg-elevated border border-accent rounded-md px-2 py-1 w-full outline-none"
                             @keydown.enter="saveEdit" />
                     </div>
@@ -60,7 +60,7 @@
                         </div>
                         <div v-if="locationPickerOpen"
                             class="bg-bg-elevated border border-accent border-t-0 rounded-b-lg">
-                            <input v-model="locationSearch" type="text" placeholder="Ort suchen..."
+                            <input v-model="locationSearch" type="search" autocomplete="off" spellcheck="false" placeholder="Ort suchen..."
                                 class="block w-full bg-transparent border-none border-b border-border-subtle px-3 py-2 font-['DM_Mono'] text-sm text-text-primary outline-none placeholder:text-text-muted"
                                 @click.stop />
                             <div class="max-h-40 overflow-y-auto">
@@ -79,7 +79,7 @@
                     <!-- Note field -->
                     <div class="flex flex-col gap-1.5">
                         <label class="text-[11px] text-text-secondary tracking-[0.08em] uppercase">Notiz</label>
-                        <input v-model="editForm.note" type="text" placeholder="Notiz..."
+                        <input v-model="editForm.note" type="search" autocomplete="off" spellcheck="false" placeholder="Notiz..."
                             class="bg-bg-elevated border border-border rounded-xl px-3.5 py-3.5 font-['DM_Mono'] text-[14px] text-text-primary outline-none transition-colors focus:border-accent"
                             @keydown.enter="saveEdit" />
                     </div>

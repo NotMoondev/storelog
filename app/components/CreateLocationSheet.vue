@@ -31,7 +31,7 @@
 
                 <!-- Body -->
                 <div class="px-5 py-5">
-                    <input ref="inputRef" v-model="name" type="text" placeholder="Name des Ortes…"
+                    <input ref="inputRef" v-model="name" type="search" autocomplete="off" spellcheck="false" placeholder="Name des Ortes…"
                         class="bg-bg-elevated border border-border rounded-xl px-4 py-3.5 font-['DM_Mono'] text-[14px] text-text-primary outline-none w-full transition-all placeholder:text-text-muted focus:border-accent focus:shadow-[0_0_0_3px_var(--accent-glow)]"
                         @keydown.enter="submit" @keydown.escape="$emit('close')" />
                 </div>

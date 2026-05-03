@@ -45,7 +45,7 @@
                             <label class="font-['DM_Mono'] text-[11px] text-text-muted uppercase tracking-wider">
                                 Name
                             </label>
-                            <input ref="inputRef" v-model="name" type="text"
+                            <input ref="inputRef" v-model="name" type="search" autocomplete="off" spellcheck="false"
                                 placeholder="z.B. Kleiderschrank, Regal, Kommode…"
                                 class="bg-bg-elevated border border-border rounded-xl px-4 py-3.5 font-['DM_Mono'] text-[14px] text-text-primary outline-none w-full transition-all placeholder:text-text-muted focus:border-accent focus:shadow-[0_0_0_3px_var(--accent-glow)]"
                                 @keydown.escape="$emit('close')" />
