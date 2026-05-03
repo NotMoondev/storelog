@@ -99,7 +99,7 @@
             </div>
         </div>
 
-        <ItemDetailModal v-if="selectedItem" :item="selectedItem" @close="selectedItem = null"
+        <ItemDetailSheet v-if="selectedItem" :item="selectedItem" @close="selectedItem = null"
             @deleted="selectedItem = null" />
 
     </div>

@@ -1,4 +1,4 @@
-export function useModal() {
+export function useSheet() {
   const isOpen = ref(false)
 
   function open() {
