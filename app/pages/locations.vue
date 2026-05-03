@@ -1,17 +1,8 @@
 <template>
     <div class="flex flex-col h-full">
 
-        <!-- Toolbar -->
-        <div class="flex items-center justify-between px-4 py-3.5 border-b border-border-subtle shrink-0">
-            <h2 class="font-['Syne'] text-[20px] font-bold text-text-primary">Orte</h2>
-            <button @click="createPickerOpen = true"
-                class="flex items-center gap-1.5 bg-accent-dim text-accent border border-accent/60 rounded-[10px] px-3.5 py-2 font-['DM_Mono'] text-sm cursor-pointer transition-all duration-150 active:scale-95 hover:bg-accent hover:text-white">
-                <IconPlus :size="16" /> Neu
-            </button>
-        </div>
-
         <!-- Search bar -->
-        <div class="px-4 pt-2.5 pb-2 shrink-0">
+        <div class="px-4 pt-3 pb-2 shrink-0">
             <div class="flex items-center gap-2.5 bg-bg-surface border border-border rounded-xl px-3.5 h-12 transition-all duration-150"
                 :class="searchQuery ? 'border-accent shadow-[0_0_0_3px_var(--accent-glow)]' : 'focus-within:border-accent focus-within:shadow-[0_0_0_3px_var(--accent-glow)]'">
                 <span class="text-text-muted shrink-0">
@@ -96,13 +87,18 @@
             </template>
         </div>
 
+        <!-- FAB -->
+        <button @click="createPickerOpen = true"
+            class="fixed bottom-24 right-5 w-14 h-14 rounded-full bg-accent text-white text-[26px] border-none cursor-pointer flex items-center justify-center shadow-[0_4px_20px_rgba(69,163,102,0.4)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] z-50 animate-[pulse-accent_3s_ease_infinite] hover:scale-[1.08] hover:shadow-[0_6px_28px_rgba(69,163,102,0.55)] active:scale-95">
+            <span class="leading-none -mt-0.5">+</span>
+        </button>
+
         <!-- Location Detail Sheet -->
         <Teleport to="body">
             <div v-if="locationDetail.open"
                 class="fixed inset-0 bg-black/75 backdrop-blur-xs z-100 flex items-end justify-center"
                 @click.self="closeLocationDetail">
-                <div
-                    class="bg-bg-surface border-t border-border rounded-t-[20px] w-full max-w-lg flex flex-col animate-slide-up"
+                <div class="bg-bg-surface border-t border-border rounded-t-[20px] w-full max-w-lg flex flex-col animate-slide-up"
                     style="max-height: 75dvh; padding-bottom: env(safe-area-inset-bottom, 0px)">
 
                     <!-- Drag handle -->
@@ -149,22 +145,15 @@
         </Teleport>
 
         <!-- Create Location Sheet -->
-        <CreateLocationSheet
-            :open="createSheet.open"
-            :parent-id="createSheet.parentId"
-            @close="createSheet.open = false"
-            @created="load" />
+        <CreateLocationSheet :open="createSheet.open" :parent-id="createSheet.parentId"
+            @close="createSheet.open = false" @created="load" />
 
         <!-- Create Container Sheet -->
-        <CreateContainerSheet
-            :open="createContainerSheet.open"
-            :parent-id="createContainerSheet.parentId"
-            @close="createContainerSheet.open = false"
-            @created="onContainerSheetCreated" />
+        <CreateContainerSheet :open="createContainerSheet.open" :parent-id="createContainerSheet.parentId"
+            @close="createContainerSheet.open = false" @created="onContainerSheetCreated" />
 
         <!-- Create picker action sheet -->
-        <CreatePickerSheet :open="createPickerOpen" @close="createPickerOpen = false"
-            @pick="onPick" />
+        <CreatePickerSheet :open="createPickerOpen" @close="createPickerOpen = false" @pick="onPick" />
 
         <!-- Container Editor -->
         <ContainerEditor :open="containerEditor.open" :container="containerEditor.container"
