@@ -55,7 +55,7 @@
                 @touchstart.stop @click.stop="editing && startRename()">
                 {{ node.name }}
             </div>
-            <input v-else ref="renameInput" v-model="renameDraft" type="search" autocomplete="off" spellcheck="false"
+            <input v-else ref="renameInput" v-model="renameDraft" type="text" autocomplete="off" spellcheck="false"
                 class="font-['DM_Mono'] text-[11px] bg-bg-elevated border border-accent rounded text-text-primary outline-none px-1.5 py-0.5 w-24 text-center pointer-events-auto shadow-[0_0_0_3px_var(--accent-glow)]"
                 @keydown.enter="commitRename" @keydown.escape="cancelRename" @blur="commitRename" @mousedown.stop
                 @touchstart.stop @click.stop />

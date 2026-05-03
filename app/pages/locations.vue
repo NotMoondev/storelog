@@ -29,7 +29,7 @@
                 </div>
                 <div class="font-['Syne'] text-[18px] font-semibold text-text-secondary">Noch keine Orte</div>
                 <div class="text-[13px] text-text-muted max-w-60">Erstelle deinen ersten Ort um loszulegen.</div>
-                <button @click="openCreate(null)"
+                <button @click="createPickerOpen = true"
                     class="mt-3 px-5 py-2.5 bg-accent text-white border-none rounded-lg font-['DM_Mono'] text-[13px] cursor-pointer transition-all hover:brightness-110">
                     Ersten Ort erstellen
                 </button>
@@ -72,7 +72,7 @@
                                 <IconMapPin :size="16" />
                             </span>
                             <input :ref="el => { if (el) editInputRefs[loc.id] = el as HTMLInputElement }"
-                                v-model="editName" autocomplete="off" type="search" spellcheck="false"
+                                v-model="editName" autocomplete="off" type="text" spellcheck="false"
                                 class="font-['DM_Mono'] text-[15px] text-text-primary bg-transparent border-none outline-none flex-1"
                                 @keydown.enter="saveEdit(loc.id)" @keydown.escape="cancelEdit" @blur="cancelEdit" />
                         </div>
