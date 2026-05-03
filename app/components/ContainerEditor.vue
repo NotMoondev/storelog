@@ -286,9 +286,10 @@ async function save() {
     if (!props.container || !localRoot.value) return
     saving.value = true
     try {
-        await saveContainerTree(props.container.id, localRoot.value)
+        const plainRoot = JSON.parse(JSON.stringify(localRoot.value))
+        await saveContainerTree(props.container.id, plainRoot)
         dirty.value = false
-        emit("saved", { ...props.container, rootNode: localRoot.value })
+        emit("saved", { ...props.container, rootNode: plainRoot })
     } finally {
         saving.value = false
     }
