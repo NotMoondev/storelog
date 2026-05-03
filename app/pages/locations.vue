@@ -298,8 +298,9 @@ function openContainerEditor(container: Container) {
     containerEditor.open = true
 }
 
-function onContainerSaved(updated: Container) {
+async function onContainerSaved(updated: Container) {
     containerEditor.container = updated
+    await load()
 }
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────────
