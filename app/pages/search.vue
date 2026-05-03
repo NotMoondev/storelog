@@ -8,7 +8,7 @@
                 <span class="text-text-muted shrink-0">
                     <IconSearch :size="16" />
                 </span>
-                <input ref="inputRef" v-model="query" type="text" placeholder="Suchen..." autocomplete="off"
+                <input ref="inputRef" v-model="query" type="search" placeholder="Suchen..." autocomplete="off"
                     autocorrect="off" spellcheck="false"
                     class="flex-1 bg-transparent border-none outline-none text-[15px] tracking-[0.02em] text-text-primary placeholder:text-text-muted" />
                 <button v-if="query" @click="clearQuery"
@@ -64,7 +64,7 @@
 
         <!-- FAB -->
         <button @click="isAddSheetOpen = true"
-            class="fixed bottom-7 right-5 w-14 h-14 rounded-full bg-accent text-white text-[26px] border-none cursor-pointer flex items-center justify-center shadow-[0_4px_20px_rgba(69,163,102,0.4)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] z-50 animate-[pulse-accent_3s_ease_infinite] hover:scale-[1.08] hover:shadow-[0_6px_28px_rgba(69,163,102,0.55)] active:scale-95">
+            class="fixed bottom-24 right-5 w-14 h-14 rounded-full bg-accent text-white text-[26px] border-none cursor-pointer flex items-center justify-center shadow-[0_4px_20px_rgba(69,163,102,0.4)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] z-50 animate-[pulse-accent_3s_ease_infinite] hover:scale-[1.08] hover:shadow-[0_6px_28px_rgba(69,163,102,0.55)] active:scale-95">
             <span class="leading-none -mt-0.5">+</span>
         </button>
 
@@ -85,8 +85,9 @@ defineEmits<{
     "add-item": []
 }>()
 
-const { items, loading } = useItems()
+const { items, loading, load: loadItems } = useItems()
 const { query, results, clearQuery } = useSearch()
+const { load: loadLocations } = useLocations()
 const inputRef = ref<HTMLInputElement>()
 const listRef = ref<HTMLElement>()
 const selectedItem = ref<ItemWithPath | null>(null)
@@ -98,6 +99,8 @@ function openItem(item: ItemWithPath) {
 }
 
 onMounted(() => {
+    loadItems()
+    loadLocations()
     nextTick(() => inputRef.value?.focus())
 })
 </script>

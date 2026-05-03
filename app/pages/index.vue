@@ -108,10 +108,15 @@
 <script setup lang="ts">
 import type { ItemWithPath } from '~/types'
 
-const { items } = useItems()
-const { locations, getLocationPath } = useLocations()
+const { items, load: loadItems } = useItems()
+const { locations, getLocationPath, load: loadLocations } = useLocations()
 
 const selectedItem = ref<ItemWithPath | null>(null)
+
+onMounted(() => {
+    loadItems()
+    loadLocations()
+})
 
 const greeting = computed(() => {
     const h = new Date().getHours()
