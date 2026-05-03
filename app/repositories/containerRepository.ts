@@ -42,6 +42,47 @@ export function makeLeaf(name = "Zone"): ContainerLeafNode {
     return { type: "leaf", id: generateId(), name }
 }
 
+/** Build a BSP tree that mirrors a cols×rows grid */
+export function buildGridTree(cols: number, rows: number): ContainerNode {
+    return _buildGridNode(cols, rows, 0, 0, cols, rows)
+}
+
+function _buildGridNode(
+    cols: number, rows: number,
+    colStart: number, rowStart: number,
+    totalCols: number, totalRows: number,
+): ContainerNode {
+    if (cols === 1 && rows === 1) {
+        const zoneNum = rowStart * totalCols + colStart + 1
+        return makeLeaf(`Zone ${zoneNum}`)
+    }
+    if (cols >= rows) {
+        const leftCols = Math.floor(cols / 2)
+        const rightCols = cols - leftCols
+        return {
+            type: "vsplit",
+            id: generateId(),
+            splitPos: leftCols / cols,
+            children: [
+                _buildGridNode(leftCols, rows, colStart, rowStart, totalCols, totalRows),
+                _buildGridNode(rightCols, rows, colStart + leftCols, rowStart, totalCols, totalRows),
+            ],
+        }
+    } else {
+        const topRows = Math.floor(rows / 2)
+        const bottomRows = rows - topRows
+        return {
+            type: "hsplit",
+            id: generateId(),
+            splitPos: topRows / rows,
+            children: [
+                _buildGridNode(cols, topRows, colStart, rowStart, totalCols, totalRows),
+                _buildGridNode(cols, bottomRows, colStart, rowStart + topRows, totalCols, totalRows),
+            ],
+        }
+    }
+}
+
 // ── Repository ────────────────────────────────────────────────────────────────
 
 export const containerRepository = {

@@ -1,4 +1,4 @@
-import { containerRepository, makeLeaf, collectLeaves, replaceNode } from "~/repositories/containerRepository"
+import { containerRepository, makeLeaf, collectLeaves, replaceNode, buildGridTree } from "~/repositories/containerRepository"
 import type { Container, ContainerNode, ContainerDimensions } from "~/types/container"
 
 export function useContainers() {
@@ -11,9 +11,10 @@ export function useContainers() {
     async function createContainer(
         name: string,
         locationId: string,
-        dimensions: ContainerDimensions
+        dimensions: ContainerDimensions,
+        initialRootNode?: ContainerNode
     ): Promise<Container> {
-        const rootNode = makeLeaf("Hauptbereich")
+        const rootNode = initialRootNode ?? makeLeaf("Hauptbereich")
         const container = await containerRepository.create({
             name,
             locationId,
@@ -57,5 +58,6 @@ export function useContainers() {
         collectLeaves,
         makeLeaf,
         replaceNode,
+        buildGridTree,
     }
 }

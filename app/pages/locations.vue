@@ -167,7 +167,7 @@ import type { Container } from '~/types/container'
 
 const { flatList, getLocationPath, createLocation, updateLocation, deleteLocation, load } = useLocations()
 const { items } = useItems()
-const { containers, createContainer, getContainerByLocationId, load: loadContainers } = useContainers()
+const { containers, createContainer, buildGridTree, getContainerByLocationId, load: loadContainers } = useContainers()
 
 // ── Search ────────────────────────────────────────────────────────────────────
 
@@ -264,12 +264,14 @@ function openCreateContainer(parentId: string | null) {
     createContainerSheet.open = true
 }
 
-async function onContainerSheetCreated(name: string, width: number, height: number) {
+async function onContainerSheetCreated(name: string, width: number, height: number, useGrid: boolean) {
     const location = await createLocation(name, createContainerSheet.parentId)
+    const initialRoot = useGrid ? buildGridTree(width, height) : undefined
     const container = await createContainer(
         name,
         location.id,
-        { unit: 'ratio', width, height }
+        { unit: 'ratio', width, height },
+        initialRoot
     )
     createContainerSheet.open = false
     openContainerEditor(container)
