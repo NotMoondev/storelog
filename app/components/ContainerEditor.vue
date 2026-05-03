@@ -216,8 +216,8 @@ function onSplit(event: { leafId: string; direction: "vsplit" | "hsplit"; pos: n
         id: leaf.id,
         splitPos: event.pos,
         children: [
-            makeLeaf("Zone A"),
-            makeLeaf("Zone B"),
+            makeLeaf(`${leaf.name} A`),
+            makeLeaf(`${leaf.name} B`),
         ],
     }
 
