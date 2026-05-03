@@ -35,10 +35,10 @@
                             class="text-[11px] text-text-muted italic whitespace-nowrap overflow-hidden text-ellipsis max-w-35">{{
                             item.note }}</span>
                     </div>
-                    <div class="flex items-center flex-wrap gap-0.75">
+                    <div class="flex items-center flex-wrap gap-1">
                         <span v-for="(seg, i) in item.locationNames" :key="i"
-                            class="text-[11px] text-accent tracking-[0.03em] flex items-center gap-0.75">
-                            <span v-if="i > 0" class="text-text-muted mr-0.75">
+                            class="text-[12px] text-accent tracking-[0.02em] flex items-center gap-1">
+                            <span v-if="i > 0" class="text-text-muted">
                                 <IconChevronRight :size="10" />
                             </span>
                             {{ seg }}
@@ -56,23 +56,23 @@
                 <div class="font-['Syne'] text-[18px] font-semibold text-text-secondary">
                     {{ query ? 'Nichts gefunden' : 'Noch keine Gegenstände' }}
                 </div>
-                <div class="text-[13px] text-text-muted max-w-65 leading-[1.7]">
+                <div class="text-[13px] text-text-muted max-w-65 leading-relaxed">
                     {{ query ? `Kein Gegenstand für „${query}" gefunden.` : 'Tippe auf + um deinen ersten Gegenstand hinzuzufügen.' }}
                 </div>
             </div>
         </div>
 
         <!-- FAB -->
-        <button @click="isAddModalOpen = true"
+        <button @click="isAddSheetOpen = true"
             class="fixed bottom-7 right-5 w-14 h-14 rounded-full bg-accent text-white text-[26px] border-none cursor-pointer flex items-center justify-center shadow-[0_4px_20px_rgba(69,163,102,0.4)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] z-50 animate-[pulse-accent_3s_ease_infinite] hover:scale-[1.08] hover:shadow-[0_6px_28px_rgba(69,163,102,0.55)] active:scale-95">
             <span class="leading-none -mt-0.5">+</span>
         </button>
 
-        <!-- Item Detail Modal -->
-        <ItemDetailModal v-if="selectedItem" :item="selectedItem" @close="selectedItem = null"
+        <!-- Item Detail Sheet -->
+        <ItemDetailSheet v-if="selectedItem" :item="selectedItem" @close="selectedItem = null"
             @deleted="selectedItem = null" />
 
-        <AddItemModal v-if="isAddModalOpen" @close="isAddModalOpen = false" @saved="isAddModalOpen = false" />
+        <AddItemSheet v-if="isAddSheetOpen" @close="isAddSheetOpen = false" @saved="isAddSheetOpen = false" />
     </div>
 </template>
 
@@ -91,7 +91,7 @@ const inputRef = ref<HTMLInputElement>()
 const listRef = ref<HTMLElement>()
 const selectedItem = ref<ItemWithPath | null>(null)
 
-const isAddModalOpen = ref(false)
+const isAddSheetOpen = ref(false)
 
 function openItem(item: ItemWithPath) {
     selectedItem.value = item

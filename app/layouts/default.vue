@@ -3,7 +3,7 @@
 
         <!-- Header -->
         <header
-            class="shrink-0 flex items-center justify-between px-4 h-13 border-b border-border-subtle bg-bg relative z-10">
+            class="shrink-0 flex items-center justify-between px-4 h-16 border-b border-border-subtle bg-bg relative z-10">
 
             <!-- Title -->
             <NuxtLink to="/" :class="{ 'border-b border-b-accent': $route.path === '/' }" class="flex items-center gap-2 font-['Syne'] font-bold text-[15px] tracking-widest text-text-primary">

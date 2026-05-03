@@ -3,10 +3,16 @@
         <div class="fixed inset-0 bg-black/75 backdrop-blur-xs z-100 flex items-end justify-center"
             @click.self="$emit('close')">
             <div
-                class="bg-bg-surface border border-border rounded-[20px_20px_0_0] w-full max-w-140 max-h-[88dvh] overflow-y-auto pb-[env(safe-area-inset-bottom,0)] animate-slide-up">
+                class="bg-bg-surface border-t border-border rounded-t-[20px] w-full max-w-140 max-h-[88dvh] flex flex-col animate-slide-up"
+                style="padding-bottom: env(safe-area-inset-bottom, 0px)">
+
+                <!-- Drag handle -->
+                <div class="flex justify-center pt-3 pb-1 shrink-0">
+                    <div class="w-10 h-1 rounded-full bg-border" />
+                </div>
 
                 <!-- Header -->
-                <div class="flex items-center gap-3 px-5 pt-5 pb-3.5 border-b border-border-subtle">
+                <div class="flex items-center gap-3 px-5 pt-2 pb-3.5 border-b border-border-subtle shrink-0">
                     <div class="text-accent shrink-0">
                         <IconBox :size="20" />
                     </div>
@@ -18,25 +24,27 @@
                             @keydown.enter="saveEdit" />
                     </div>
                     <button @click="$emit('close')"
-                        class="bg-bg-elevated border border-border text-text-secondary w-7 h-7 rounded-md cursor-pointer text-sm flex items-center justify-center shrink-0 transition-all hover:text-text-primary">✕</button>
+                        class="bg-bg-elevated border border-border text-text-secondary w-9 h-9 rounded-xl cursor-pointer flex items-center justify-center shrink-0 transition-all active:scale-95 hover:text-text-primary">
+                        <IconX :size="18" />
+                    </button>
                 </div>
 
                 <!-- Location path -->
-                <div class="flex items-center gap-2 px-5 py-3.5 border-b border-border-subtle">
+                <div class="flex items-center gap-2 px-5 py-3.5 border-b border-border-subtle shrink-0">
                     <span class="text-accent/60">
                         <IconMapPin :size="14" />
                     </span>
-                    <span class="text-[13px] text-accent tracking-[0.02em]">{{ locationPath }}</span>
+                    <span class="text-[14px] text-accent tracking-[0.02em]">{{ locationPath }}</span>
                 </div>
 
                 <!-- Note -->
                 <div v-if="localItem.note && !editing"
-                    class="px-5 py-3 text-[13px] text-text-secondary italic border-b border-border-subtle">
+                    class="px-5 py-3.5 text-[14px] text-text-secondary italic border-b border-border-subtle shrink-0">
                     {{ localItem.note }}
                 </div>
 
                 <!-- Edit form -->
-                <div v-if="editing" class="px-5 py-4 flex flex-col gap-3.5 border-b border-border-subtle">
+                <div v-if="editing" class="px-5 py-4 flex flex-col gap-4 border-b border-border-subtle overflow-y-auto flex-1">
 
                     <!-- Location field -->
                     <div class="flex flex-col gap-1.5 relative">
@@ -72,30 +80,30 @@
                     <div class="flex flex-col gap-1.5">
                         <label class="text-[11px] text-text-secondary tracking-[0.08em] uppercase">Notiz</label>
                         <input v-model="editForm.note" type="text" placeholder="Notiz..."
-                            class="bg-bg-elevated border border-border rounded-lg px-3 py-2.5 font-['DM_Mono'] text-[13px] text-text-primary outline-none transition-colors focus:border-accent"
+                            class="bg-bg-elevated border border-border rounded-xl px-3.5 py-3.5 font-['DM_Mono'] text-[14px] text-text-primary outline-none transition-colors focus:border-accent"
                             @keydown.enter="saveEdit" />
                     </div>
                 </div>
 
                 <!-- Meta -->
-                <div class="px-5 py-3 text-[11px] text-text-muted tracking-[0.02em]">
+                <div class="px-5 py-3 text-[12px] text-text-muted tracking-[0.02em] shrink-0">
                     Hinzugefügt: {{ formatDate(localItem.createdAt) }}
                 </div>
 
                 <!-- Footer -->
-                <div class="px-5 pt-3.5 pb-5 flex gap-2.5 border-t border-border-subtle">
+                <div class="px-5 pt-3 pb-5 flex gap-3 border-t border-border-subtle shrink-0">
                     <template v-if="!editing">
                         <button @click="confirmDelete"
-                            class="flex-1 py-3 rounded-lg font-['DM_Mono'] text-[13px] cursor-pointer border transition-all bg-danger-dim text-danger border-danger/30 hover:bg-danger hover:text-white hover:border-danger">Löschen</button>
+                            class="flex-1 py-3.5 rounded-xl font-['DM_Mono'] text-[14px] cursor-pointer border transition-all bg-danger-dim text-danger border-danger/30 active:scale-[0.97] hover:bg-danger hover:text-white hover:border-danger">Löschen</button>
                         <button @click="startEdit"
-                            class="flex-1 py-3 rounded-lg font-['DM_Mono'] text-[13px] cursor-pointer border-none transition-all bg-accent text-white hover:brightness-110">Bearbeiten</button>
+                            class="flex-1 py-3.5 rounded-xl font-['DM_Mono'] text-[14px] cursor-pointer border-none transition-all bg-accent text-white active:scale-[0.97] hover:brightness-110">Bearbeiten</button>
                     </template>
                     <template v-else>
                         <button @click="cancelEdit"
-                            class="flex-1 py-3 rounded-lg font-['DM_Mono'] text-[13px] cursor-pointer transition-all bg-bg-elevated text-text-secondary border border-border hover:bg-bg-hover">Abbrechen</button>
+                            class="flex-1 py-3.5 rounded-xl font-['DM_Mono'] text-[14px] cursor-pointer transition-all bg-bg-elevated text-text-secondary border border-border active:scale-[0.97] hover:bg-bg-hover">Abbrechen</button>
                         <button @click="saveEdit" :disabled="saving"
-                            class="flex-1 py-3 rounded-lg font-['DM_Mono'] text-[13px] cursor-pointer border-none transition-all bg-accent text-white hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed">{{
-                                saving ? "..." : "Speichern" }}</button>
+                            class="flex-1 py-3.5 rounded-xl font-['DM_Mono'] text-[14px] cursor-pointer border-none transition-all bg-accent text-white active:scale-[0.97] hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed">{{
+                                saving ? "…" : "Speichern" }}</button>
                     </template>
                 </div>
 
