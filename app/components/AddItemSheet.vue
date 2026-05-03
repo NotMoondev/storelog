@@ -28,7 +28,7 @@
                         <label class="font-['DM_Mono'] text-[11px] text-text-secondary tracking-[0.08em] uppercase">
                             Name *
                         </label>
-                        <input ref="nameRef" v-model="form.name" type="search"
+                        <input ref="nameRef" v-model="form.name" type="text"
                             placeholder="z. B. Ladekabel, Schlüssel..." autocomplete="off" spellcheck="false"
                             class="bg-bg-elevated border border-border rounded-lg px-3.5 py-3 font-['DM_Mono'] text-[14px] text-text-primary outline-none w-full transition-all placeholder:text-text-muted focus:border-accent focus:shadow-[0_0_0_3px_var(--accent-glow)]"
                             @keydown.enter="focusLocation" />
@@ -60,7 +60,7 @@
                             Notiz
                             <span class="text-text-muted normal-case tracking-normal">(optional)</span>
                         </label>
-                        <input v-model="form.note" type="search" autocomplete="off" spellcheck="false"
+                        <input v-model="form.note" type="text" autocomplete="off" spellcheck="false"
                             placeholder="Kurze Beschreibung..."
                             class="bg-bg-elevated border border-border rounded-lg px-3.5 py-3 font-['DM_Mono'] text-[14px] text-text-primary outline-none w-full transition-all placeholder:text-text-muted focus:border-accent focus:shadow-[0_0_0_3px_var(--accent-glow)]"
                             @keydown.enter="submit" />
