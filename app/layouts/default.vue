@@ -24,7 +24,7 @@
         </header>
 
         <!-- Content -->
-        <main class="flex-1 overflow-hidden flex flex-col pb-24">
+        <main class="flex-1 overflow-hidden flex flex-col">
             <slot />
         </main>
 

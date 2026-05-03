@@ -116,6 +116,26 @@
                             </div>
                         </div>
 
+                        <!-- Use-grid toggle -->
+                        <div
+                            class="flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer select-none"
+                            :class="useGrid
+                                ? 'bg-accent-dim border-accent/60'
+                                : 'bg-bg-elevated border-border hover:border-text-muted'"
+                            @click="useGrid = !useGrid">
+                            <div
+                                class="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all"
+                                :class="useGrid ? 'bg-accent border-accent' : 'bg-bg-surface border-border'">
+                                <IconCheck v-if="useGrid" :size="12" class="text-white" />
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-['DM_Mono'] text-[13px]" :class="useGrid ? 'text-accent' : 'text-text-primary'">Grid direkt als Zonen übernehmen</div>
+                                <div class="font-['DM_Mono'] text-[11px] text-text-muted">
+                                    Erstellt sofort {{ width * height }} {{ width * height === 1 ? 'Zone' : 'Zonen' }} entsprechend dem Raster
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- Footer actions -->
@@ -152,7 +172,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     close: []
-    created: [name: string, width: number, height: number]
+    created: [name: string, width: number, height: number, useGrid: boolean]
 }>()
 
 const { getLocationPath } = useLocations()
@@ -162,10 +182,11 @@ const name = ref('')
 const width = ref(2)
 const height = ref(3)
 const saving = ref(false)
+const useGrid = ref(false)
 
 const proportionPresets: ProportionPreset[] = [
     { label: 'Quadrat', width: 1, height: 1 },
-    { label: 'Hochschrank', width: 1, height: 2 },
+    { label: 'Hochschrank', width: 1, height: 4 },
     { label: 'Kleiderschrank', width: 2, height: 3 },
     { label: 'Regal', width: 3, height: 2 },
     { label: 'Kommode', width: 4, height: 3 },
@@ -196,6 +217,7 @@ watch(() => props.open, (val) => {
         width.value = 2
         height.value = 3
         saving.value = false
+        useGrid.value = false
         nextTick(() => inputRef.value?.focus())
     }
 })
@@ -204,7 +226,7 @@ async function submit() {
     if (!name.value.trim() || saving.value) return
     saving.value = true
     try {
-        emit('created', name.value.trim(), width.value, height.value)
+        emit('created', name.value.trim(), width.value, height.value, useGrid.value)
     } finally {
         saving.value = false
     }
