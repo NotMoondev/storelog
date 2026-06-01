@@ -1,11 +1,11 @@
 <template>
     <Teleport to="body">
         <div v-if="open"
-            class="fixed inset-0 bg-black/80 backdrop-blur-sm z-200 flex items-end sm:items-center justify-center p-0 sm:p-4"
+            class="fixed inset-0 bg-black/80 backdrop-blur-sm z-200 flex items-end lg:items-center justify-center p-0 lg:p-4"
             @click.self="handleOverlayClick">
 
             <div
-                class="w-full sm:max-w-195 h-[92dvh] max-h-[92dvh] flex flex-col overflow-hidden rounded-t-[18px] sm:rounded-2xl border border-border bg-bg-surface shadow-[0_32px_80px_rgba(0,0,0,0.6)] animate-slide-up">
+                class="w-full lg:max-w-195 h-[92dvh] max-h-[92dvh] lg:max-h-[90vh] flex flex-col overflow-hidden rounded-t-[18px] lg:rounded-2xl border border-border bg-bg-surface shadow-[0_32px_80px_rgba(0,0,0,0.6)] animate-slide-up lg:animate-fade-in">
 
                 <!-- Header row 1: title + close -->
                 <div class="flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
@@ -48,7 +48,7 @@
 
                     <!-- Edit / Done toggle -->
                     <button
-                        class="flex items-center gap-1.5 h-8 px-3 rounded-[7px] border font-['DM_Mono'] text-[12px] cursor-pointer transition-all"
+                        class="flex items-center gap-1.5 h-8 px-3 rounded-[7px] border text-[12px] cursor-pointer transition-all"
                         :class="editing
                             ? 'bg-accent-dim border-accent text-accent'
                             : 'bg-bg-elevated border-border text-text-secondary hover:border-accent hover:text-accent'"
@@ -62,7 +62,7 @@
 
                     <!-- Save -->
                     <button
-                        class="flex items-center gap-1.5 h-8 px-3.5 rounded-[7px] border-none font-['DM_Mono'] text-[12px] cursor-pointer transition-all bg-accent text-white hover:brightness-110 disabled:opacity-35 disabled:cursor-not-allowed"
+                        class="flex items-center gap-1.5 h-8 px-3.5 rounded-[7px] border-none text-[12px] cursor-pointer transition-all bg-accent text-black hover:brightness-110 disabled:opacity-35 disabled:cursor-not-allowed"
                         :disabled="saving || !dirty" @click="save">
                         <IconSave :size="13" />
                         {{ saving ? 'Speichern…' : 'Speichern' }}
@@ -73,24 +73,24 @@
                 <div v-if="editing"
                     class="hidden sm:flex items-center justify-between px-4 py-2 bg-bg-elevated border-b border-border-subtle shrink-0 gap-3">
                     <div class="flex items-center gap-3 flex-wrap">
-                        <span class="font-['DM_Mono'] text-[10px] text-text-muted flex items-center gap-1">
+                        <span class="text-[10px] text-text-muted flex items-center gap-1">
                             <kbd
-                                class="bg-bg-surface border border-border rounded px-1 py-px text-[9px] font-['DM_Mono'] text-text-secondary">Drag</kbd>
+                                class="bg-bg-surface border border-border rounded px-1 py-px text-[9px] text-text-secondary">Drag</kbd>
                             Zone teilen
                         </span>
-                        <span class="font-['DM_Mono'] text-[10px] text-text-muted flex items-center gap-1">
+                        <span class="text-[10px] text-text-muted flex items-center gap-1">
                             <kbd
-                                class="bg-bg-surface border border-border rounded px-1 py-px text-[9px] font-['DM_Mono'] text-text-secondary">Tippen</kbd>
+                                class="bg-bg-surface border border-border rounded px-1 py-px text-[9px] text-text-secondary">Tippen</kbd>
                             Zone umbenennen
                         </span>
-                        <span class="font-['DM_Mono'] text-[10px] text-text-muted flex items-center gap-1">
+                        <span class="text-[10px] text-text-muted flex items-center gap-1">
                             <kbd
-                                class="bg-bg-surface border border-border rounded px-1 py-px text-[9px] font-['DM_Mono'] text-text-secondary">✕</kbd>
+                                class="bg-bg-surface border border-border rounded px-1 py-px text-[9px] text-text-secondary">✕</kbd>
                             Split entfernen
                         </span>
                     </div>
                     <span
-                        class="font-['DM_Mono'] text-[10px] text-text-muted bg-bg-surface border border-border-subtle rounded-[5px] px-2 py-0.5 shrink-0">
+                        class="text-[10px] text-text-muted bg-bg-surface border border-border-subtle rounded-[5px] px-2 py-0.5 shrink-0">
                         {{ zoneCount }} Zonen
                     </span>
                 </div>
@@ -112,12 +112,12 @@
                     <div v-for="zone in zoneList" :key="zone.id"
                         class="flex items-center gap-1.5 bg-bg-elevated border border-border-subtle rounded-md px-2.5 py-1">
                         <div class="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-                        <span class="font-['DM_Mono'] text-[11px] text-text-primary">{{ zone.name }}</span>
+                        <span class="text-[11px] text-text-primary">{{ zone.name }}</span>
                         <span v-if="zone.locationId && itemCounts[zone.locationId]"
-                            class="font-['DM_Mono'] text-[10px] text-accent bg-accent-dim rounded-full px-1.5">
+                            class="text-[10px] text-accent bg-accent-dim rounded-full px-1.5">
                             {{ itemCounts[zone.locationId] }}
                         </span>
-                        <span v-else class="font-['DM_Mono'] text-[10px] text-text-muted">leer</span>
+                        <span v-else class="text-[10px] text-text-muted">leer</span>
                     </div>
                 </div>
 

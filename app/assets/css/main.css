@@ -3,105 +3,105 @@
 @custom-variant dark (&:is([data-theme="dark"] *), :root:not([data-theme]) &);
 
 @theme {
-    --color-bg: #1c1c1e;
-    --color-bg-surface: #252528;
-    --color-bg-elevated: #2e2e32;
-    --color-bg-hover: #38383d;
-    --color-border: #3a3a3f;
-    --color-border-subtle: #2e2e32;
-    --color-accent: #4ec778;
-    --color-accent-dim: rgba(69, 163, 102, 0.20);
-    --color-accent-glow: rgba(69, 163, 102, 0.08);
-    --color-text-primary: #f5f5f5;
-    --color-text-secondary: #d4d4d4;
-    --color-text-muted: #909090;
-    --color-danger: #c0392b;
-    --color-danger-dim: rgba(192, 57, 43, 0.15);
+    --color-bg: #18181b;
+    --color-bg-surface: #232329;
+    --color-bg-elevated: #2e2e36;
+    --color-bg-hover: #3a3a44;
+    --color-border: #3a3a44;
+    --color-border-subtle: #28282f;
+    --color-accent: #4ade80;
+    --color-accent-dim: rgba(74, 222, 128, 0.14);
+    --color-accent-glow: rgba(74, 222, 128, 0.07);
+    --color-text-primary: #f4f4f5;
+    --color-text-secondary: #c4c4cc;
+    --color-text-muted: #8888a0;
+    --color-danger: #f87171;
+    --color-danger-dim: rgba(248, 113, 113, 0.14);
 }
 
 /* ── Dark (default) ───────────────────────────────────────── */
 :root {
-    --bg: #1c1c1e;
-    --bg-surface: #252528;
-    --bg-elevated: #2e2e32;
-    --bg-hover: #38383d;
-    --border: #3a3a3f;
-    --border-subtle: #2e2e32;
-    --accent: #4ec778;
-    --accent-dim: rgba(69, 163, 102, 0.20);
-    --accent-glow: rgba(69, 163, 102, 0.08);
-    --text-primary: #f5f5f5;
-    --text-secondary: #d4d4d4;
-    --text-muted: #909090;
-    --danger: #c0392b;
-    --danger-dim: rgba(192, 57, 43, 0.15);
+    --bg: #18181b;
+    --bg-surface: #232329;
+    --bg-elevated: #2e2e36;
+    --bg-hover: #3a3a44;
+    --border: #3a3a44;
+    --border-subtle: #28282f;
+    --accent: #4ade80;
+    --accent-dim: rgba(74, 222, 128, 0.14);
+    --accent-glow: rgba(74, 222, 128, 0.07);
+    --text-primary: #f4f4f5;
+    --text-secondary: #c4c4cc;
+    --text-muted: #8888a0;
+    --danger: #f87171;
+    --danger-dim: rgba(248, 113, 113, 0.14);
 }
 
 /* ── Light overrides ──────────────────────────────────────── */
 html[data-theme="light"] {
-    --bg: #f5f5f5;
+    --bg: #fafafa;
     --bg-surface: #ffffff;
-    --bg-elevated: #ebebeb;
-    --bg-hover: #e0e0e0;
-    --border: #d4d4d4;
-    --border-subtle: #ebebeb;
-    --accent: #3aaa63;
-    --accent-dim: rgba(58, 170, 99, 0.15);
-    --accent-glow: rgba(58, 170, 99, 0.08);
-    --text-primary: #1c1c1e;
-    --text-secondary: #3a3a3f;
-    --text-muted: #737373;
-    --danger: #c0392b;
-    --danger-dim: rgba(192, 57, 43, 0.12);
+    --bg-elevated: #f4f4f5;
+    --bg-hover: #e4e4e7;
+    --border: #d4d4d8;
+    --border-subtle: #e4e4e7;
+    --accent: #16a34a;
+    --accent-dim: rgba(22, 163, 74, 0.10);
+    --accent-glow: rgba(22, 163, 74, 0.05);
+    --text-primary: #18181b;
+    --text-secondary: #3f3f46;
+    --text-muted: #71717a;
+    --danger: #dc2626;
+    --danger-dim: rgba(220, 38, 38, 0.10);
 
     /* Tailwind color tokens */
-    --color-bg: #f5f5f5;
+    --color-bg: #fafafa;
     --color-bg-surface: #ffffff;
-    --color-bg-elevated: #ebebeb;
-    --color-bg-hover: #e0e0e0;
-    --color-border: #d4d4d4;
-    --color-border-subtle: #ebebeb;
-    --color-accent: #3aaa63;
-    --color-accent-dim: rgba(58, 170, 99, 0.15);
-    --color-accent-glow: rgba(58, 170, 99, 0.08);
-    --color-text-primary: #1c1c1e;
-    --color-text-secondary: #3a3a3f;
-    --color-text-muted: #737373;
-    --color-danger: #c0392b;
-    --color-danger-dim: rgba(192, 57, 43, 0.12);
+    --color-bg-elevated: #f4f4f5;
+    --color-bg-hover: #e4e4e7;
+    --color-border: #d4d4d8;
+    --color-border-subtle: #e4e4e7;
+    --color-accent: #16a34a;
+    --color-accent-dim: rgba(22, 163, 74, 0.10);
+    --color-accent-glow: rgba(22, 163, 74, 0.05);
+    --color-text-primary: #18181b;
+    --color-text-secondary: #3f3f46;
+    --color-text-muted: #71717a;
+    --color-danger: #dc2626;
+    --color-danger-dim: rgba(220, 38, 38, 0.10);
 }
 
 @media (prefers-color-scheme: light) {
     html[data-theme="system"] {
-        --bg: #f5f5f5;
+        --bg: #fafafa;
         --bg-surface: #ffffff;
-        --bg-elevated: #ebebeb;
-        --bg-hover: #e0e0e0;
-        --border: #d4d4d4;
-        --border-subtle: #ebebeb;
-        --accent: #3aaa63;
-        --accent-dim: rgba(58, 170, 99, 0.15);
-        --accent-glow: rgba(58, 170, 99, 0.08);
-        --text-primary: #1c1c1e;
-        --text-secondary: #3a3a3f;
-        --text-muted: #737373;
-        --danger: #c0392b;
-        --danger-dim: rgba(192, 57, 43, 0.12);
+        --bg-elevated: #f4f4f5;
+        --bg-hover: #e4e4e7;
+        --border: #d4d4d8;
+        --border-subtle: #e4e4e7;
+        --accent: #16a34a;
+        --accent-dim: rgba(22, 163, 74, 0.10);
+        --accent-glow: rgba(22, 163, 74, 0.05);
+        --text-primary: #18181b;
+        --text-secondary: #3f3f46;
+        --text-muted: #71717a;
+        --danger: #dc2626;
+        --danger-dim: rgba(220, 38, 38, 0.10);
 
-        --color-bg: #f5f5f5;
+        --color-bg: #fafafa;
         --color-bg-surface: #ffffff;
-        --color-bg-elevated: #ebebeb;
-        --color-bg-hover: #e0e0e0;
-        --color-border: #d4d4d4;
-        --color-border-subtle: #ebebeb;
-        --color-accent: #3aaa63;
-        --color-accent-dim: rgba(58, 170, 99, 0.15);
-        --color-accent-glow: rgba(58, 170, 99, 0.08);
-        --color-text-primary: #1c1c1e;
-        --color-text-secondary: #3a3a3f;
-        --color-text-muted: #737373;
-        --color-danger: #c0392b;
-        --color-danger-dim: rgba(192, 57, 43, 0.12);
+        --color-bg-elevated: #f4f4f5;
+        --color-bg-hover: #e4e4e7;
+        --color-border: #d4d4d8;
+        --color-border-subtle: #e4e4e7;
+        --color-accent: #16a34a;
+        --color-accent-dim: rgba(22, 163, 74, 0.10);
+        --color-accent-glow: rgba(22, 163, 74, 0.05);
+        --color-text-primary: #18181b;
+        --color-text-secondary: #3f3f46;
+        --color-text-muted: #71717a;
+        --color-danger: #dc2626;
+        --color-danger-dim: rgba(220, 38, 38, 0.10);
     }
 }
 
@@ -114,7 +114,7 @@ html,
 body {
     background: var(--bg);
     color: var(--text-primary);
-    font-family: "DM Mono", monospace;
+    font-family: "Inter", system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.6;
     height: 100%;
@@ -182,11 +182,11 @@ h3,
 
     0%,
     100% {
-        box-shadow: 0 0 0 0 rgba(69, 163, 102, 0.3);
+        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.3);
     }
 
     50% {
-        box-shadow: 0 0 0 6px rgba(69, 163, 102, 0);
+        box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
     }
 }
 
