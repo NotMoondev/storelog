@@ -50,19 +50,19 @@
         <div class="flex flex-col items-center gap-1 px-2 py-2 text-center pointer-events-none z-1">
             <!-- Name — stops touch so parent drag doesn't fire, click = rename -->
             <div v-if="!renaming"
-                class="font-['DM_Mono'] text-[11px] text-text-muted whitespace-nowrap overflow-hidden text-ellipsis max-w-30 px-1.5 py-1 rounded transition-all pointer-events-auto select-none"
+                class="text-[11px] text-text-muted whitespace-nowrap overflow-hidden text-ellipsis max-w-30 px-1.5 py-1 rounded transition-all pointer-events-auto select-none"
                 :class="editing ? 'cursor-text hover:text-text-primary hover:bg-bg-hover active:bg-bg-hover' : ''"
                 @touchstart.stop @click.stop="editing && startRename()">
                 {{ node.name }}
             </div>
             <input v-else ref="renameInput" v-model="renameDraft" type="text" autocomplete="off" spellcheck="false"
-                class="font-['DM_Mono'] text-[11px] bg-bg-elevated border border-accent rounded text-text-primary outline-none px-1.5 py-0.5 w-24 text-center pointer-events-auto shadow-[0_0_0_3px_var(--accent-glow)]"
+                class="text-[11px] bg-bg-elevated border border-accent rounded text-text-primary outline-none px-1.5 py-0.5 w-24 text-center pointer-events-auto shadow-[0_0_0_3px_var(--accent-glow)]"
                 @keydown.enter="commitRename" @keydown.escape="cancelRename" @blur="commitRename" @mousedown.stop
                 @touchstart.stop @click.stop />
 
             <!-- Item count badge -->
             <div v-if="hasItems && !renaming"
-                class="font-['DM_Mono'] text-[9px] bg-accent-dim text-accent rounded-full px-1.5 pointer-events-none">
+                class="text-[9px] bg-accent-dim text-accent rounded-full px-1.5 pointer-events-none">
                 {{ itemCounts[node.locationId!] }}
             </div>
         </div>
@@ -77,7 +77,7 @@
         <!-- Edit hint: desktop only, appears on hover -->
         <div v-if="editing && !renaming && !dragPreview"
             class="absolute bottom-1.5 left-0 right-0 hidden sm:flex flex-col items-center gap-px pointer-events-none opacity-0 group-hover/leaf:opacity-100 transition-opacity">
-            <span class="font-['DM_Mono'] text-[9px] text-text-muted">Ziehen zum Teilen</span>
+            <span class="text-[9px] text-text-muted">Ziehen zum Teilen</span>
         </div>
     </div>
 </template>
