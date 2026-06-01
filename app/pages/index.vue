@@ -1,10 +1,10 @@
 <!-- components/IndexView.vue -->
 <template>
-    <div class="flex flex-col h-full overflow-y-auto pb-24">
+    <div class="flex flex-col h-full overflow-y-auto pb-24 lg:pb-8">
 
         <!-- Header -->
         <div class="px-4 pt-5 pb-4 shrink-0">
-            <div class="text-[11px] text-text-muted tracking-widest uppercase mb-1">Übersicht</div>
+            <div class="text-[12px] text-text-secondary/70 tracking-widest uppercase mb-1">Übersicht</div>
             <h1 class="font-['Syne'] text-[24px] font-bold text-text-primary leading-tight">{{ greeting }}</h1>
         </div>
 
@@ -12,8 +12,8 @@
         <div class="px-4 grid grid-cols-2 gap-2.5 mb-4">
 
             <!-- Wide card -->
-            <div class="col-span-2 bg-bg-surface border border-border-subtle rounded-xl p-4 flex flex-col gap-0.5">
-                <div class="text-[11px] text-text-muted tracking-[0.08em] uppercase">Gegenstände gesamt</div>
+            <div class="col-span-2 bg-bg-surface border border-border rounded-xl p-4 flex flex-col gap-0.5">
+                <div class="text-[11px] text-text-secondary/70 tracking-[0.08em] uppercase">Gegenstände gesamt</div>
                 <div class="font-['Syne'] text-[32px] font-bold text-text-primary leading-[1.1] my-1">{{ items.length }}
                 </div>
                 <div class="text-[11px] text-text-muted">in {{ locations.length }} Orten gespeichert</div>
@@ -24,16 +24,16 @@
             </div>
 
             <!-- Orte -->
-            <div class="bg-bg-surface border border-border-subtle rounded-xl p-4 flex flex-col gap-0.5">
-                <div class="text-[11px] text-text-muted tracking-[0.08em] uppercase">Orte</div>
+            <div class="bg-bg-surface border border-border rounded-xl p-4 flex flex-col gap-0.5">
+                <div class="text-[11px] text-text-secondary/70 tracking-[0.08em] uppercase">Orte</div>
                 <div class="font-['Syne'] text-[32px] font-bold text-text-primary leading-[1.1] my-1">{{
                     locations.length }}</div>
                 <div class="text-[11px] text-text-muted">{{ rootLocationCount }} Hauptorte</div>
             </div>
 
             <!-- Zuletzt hinzugefügt -->
-            <div class="bg-bg-surface border border-border-subtle rounded-xl p-4 flex flex-col gap-0.5">
-                <div class="text-[11px] text-text-muted tracking-[0.08em] uppercase">Zuletzt hinzugefügt</div>
+            <div class="bg-bg-surface border border-border rounded-xl p-4 flex flex-col gap-0.5">
+                <div class="text-[11px] text-text-secondary/70 tracking-[0.08em] uppercase">Zuletzt hinzugefügt</div>
                 <div class="font-['Syne'] text-[15px] font-bold text-text-primary leading-snug mt-1">{{ lastAddedName }}
                 </div>
                 <div class="text-[11px] text-text-muted">{{ lastAddedDate }}</div>
@@ -43,10 +43,10 @@
 
         <!-- Top locations -->
         <div class="px-4 mb-4" v-if="topLocations.length > 0">
-            <div class="text-[11px] text-text-muted tracking-widest uppercase mb-2 px-0.5">Meiste Gegenstände</div>
+            <div class="text-[12px] text-text-secondary/70 tracking-widest uppercase mb-2 px-0.5">Meiste Gegenstände</div>
             <div class="flex flex-col gap-1.5">
                 <div v-for="(loc, i) in topLocations" :key="loc.id"
-                    class="flex items-center gap-3 px-4 py-3 bg-bg-surface border border-border-subtle rounded-[10px]">
+                    class="flex items-center gap-3 px-4 py-3 bg-bg-surface border border-border rounded-[10px]">
                     <span class="text-[11px] text-text-muted w-4 shrink-0 text-right">{{ i + 1 }}</span>
                     <div class="flex-1 min-w-0">
                         <div class="text-[13px] text-text-primary truncate">{{ loc.name }}</div>
@@ -65,24 +65,22 @@
 
         <!-- Recent items -->
         <div class="px-4 mb-4" v-if="recentItems.length > 0">
-            <div class="text-[11px] text-text-muted tracking-widest uppercase mb-2 px-0.5">Zuletzt hinzugefügt</div>
-            <div class="flex flex-col gap-1.5">
+            <div class="text-[12px] text-text-secondary/70 tracking-widest uppercase mb-2 px-0.5">Zuletzt hinzugefügt</div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-1.5 lg:gap-2">
                 <div v-for="item in recentItems" :key="item.id"
-                    class="flex items-center gap-3 px-4 py-3 bg-bg-surface border border-border-subtle rounded-[10px] cursor-pointer transition-all duration-150 hover:border-border hover:bg-bg-elevated"
+                    class="flex flex-col px-4 py-3 lg:px-5 lg:py-4 bg-bg-surface border border-border rounded-[10px] cursor-pointer transition-all duration-150 hover:bg-bg-elevated hover:border-border"
                     @click="selectedItem = item">
-                    <div class="flex-1 min-w-0">
-                        <div class="text-[13px] text-text-primary font-['Syne'] font-semibold truncate">{{ item.name }}
-                        </div>
-                        <div class="flex items-center gap-0.5 mt-0.5">
-                            <span v-for="(seg, i) in item.locationNames" :key="i"
-                                class="text-[10px] text-accent flex items-center gap-0.5">
-                                <IconChevronRight v-if="i > 0" :size="9" class="text-text-muted" />
-                                {{ seg }}
-                            </span>
-                        </div>
+                    <div class="flex items-start justify-between gap-2 mb-1">
+                        <div class="text-[13px] lg:text-[14px] text-text-primary font-['Syne'] font-semibold leading-snug truncate">{{ item.name }}</div>
+                        <span class="text-[10px] text-text-muted shrink-0 tabular-nums mt-0.5">{{ formatRelative(item.createdAt) }}</span>
                     </div>
-                    <span class="text-[10px] text-text-muted shrink-0 tabular-nums">{{ formatRelative(item.createdAt)
-                        }}</span>
+                    <div class="flex items-center gap-0.5 mt-0.5">
+                        <span v-for="(seg, i) in item.locationNames" :key="i"
+                            class="text-[11px] text-accent flex items-center gap-0.5">
+                            <IconChevronRight v-if="i > 0" :size="9" class="text-text-muted" />
+                            {{ seg }}
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>

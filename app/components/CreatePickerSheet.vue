@@ -1,14 +1,14 @@
 <template>
     <Teleport to="body">
         <div v-if="open"
-            class="fixed inset-0 bg-black/75 backdrop-blur-xs z-100 flex items-end justify-center"
+            class="fixed inset-0 bg-black/75 backdrop-blur-xs z-100 flex items-end lg:items-center justify-center"
             @click.self="$emit('close')">
             <div
-                class="w-full max-w-lg bg-bg-surface border-t border-border rounded-t-[20px] flex flex-col animate-slide-up"
+                class="w-full max-w-lg bg-bg-surface border-t lg:border border-border rounded-t-[20px] lg:rounded-[20px] flex flex-col animate-slide-up lg:animate-fade-in"
                 style="padding-bottom: env(safe-area-inset-bottom, 0px)">
 
                 <!-- Drag handle -->
-                <div class="flex justify-center pt-3 pb-1 shrink-0">
+                <div class="lg:hidden flex justify-center pt-3 pb-1 shrink-0">
                     <div class="w-10 h-1 rounded-full bg-border" />
                 </div>
 
@@ -26,8 +26,8 @@
                             <IconMapPin :size="20" />
                         </div>
                         <div>
-                            <div class="font-['DM_Mono'] text-[14px] text-text-primary font-medium">Neuer Ort</div>
-                            <div class="font-['DM_Mono'] text-[11px] text-text-muted mt-0.5">Einfacher Ort ohne visuelle
+                            <div class="text-[14px] text-text-primary font-medium">Neuer Ort</div>
+                            <div class="text-[11px] text-text-muted mt-0.5">Einfacher Ort ohne visuelle
                                 Struktur</div>
                         </div>
                         <IconChevronRight :size="16" class="text-text-muted ml-auto shrink-0" />
@@ -40,8 +40,8 @@
                             <IconLayoutGrid :size="20" />
                         </div>
                         <div>
-                            <div class="font-['DM_Mono'] text-[14px] text-accent font-medium">Container</div>
-                            <div class="font-['DM_Mono'] text-[11px] text-text-muted mt-0.5">Visueller Möbel- oder
+                            <div class="text-[14px] text-accent font-medium">Container</div>
+                            <div class="text-[11px] text-text-muted mt-0.5">Visueller Möbel- oder
                                 Behälter-Editor</div>
                         </div>
                         <IconChevronRight :size="16" class="text-accent/60 ml-auto shrink-0" />
@@ -51,7 +51,7 @@
                 <!-- Cancel -->
                 <div class="px-4 pb-5 pt-1">
                     <button @click="$emit('close')"
-                        class="w-full py-3.5 rounded-xl font-['DM_Mono'] text-[14px] cursor-pointer border transition-all bg-bg-elevated text-text-secondary border-border active:scale-[0.97]">
+                        class="w-full py-3.5 rounded-xl text-[14px] cursor-pointer border transition-all bg-bg-elevated text-text-secondary border-border active:scale-[0.97]">
                         Abbrechen
                     </button>
                 </div>

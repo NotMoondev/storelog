@@ -1,7 +1,7 @@
 type Theme = 'dark' | 'light' | 'system'
 
 const STORAGE_KEY = 'replog-theme'
-const theme = ref<Theme>('dark')
+const theme = ref<Theme>('system')
 
 function applyTheme(t: Theme) {
     document.documentElement.setAttribute('data-theme', t)
