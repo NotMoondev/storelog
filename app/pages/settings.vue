@@ -18,7 +18,7 @@
                 </div>
                 <div class="grid grid-cols-3 gap-2">
                     <button v-for="opt in themeOptions" :key="opt.value" @click="setTheme(opt.value)" :class="[
-                        'flex flex-col items-center gap-1.5 rounded-xl py-3 text-xs font-[\'DM_Mono\'] transition-all duration-150 border cursor-pointer',
+                        'flex flex-col items-center gap-1.5 rounded-xl py-3 text-xs transition-all duration-150 border cursor-pointer',
                         theme === opt.value
                             ? 'bg-accent-dim border-accent/60 text-accent'
                             : 'bg-bg-elevated border-border text-text-secondary hover:bg-bg-hover hover:text-text-primary'
@@ -47,7 +47,7 @@
                         <!-- Export -->
                         <button @click="handleExport" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm
                     bg-bg-elevated border border-border text-text-secondary
-                    font-['DM_Mono'] cursor-pointer transition-all duration-150
+                    cursor-pointer transition-all duration-150
                     hover:bg-accent-dim hover:border-accent/40 hover:text-accent
                     disabled:opacity-40 disabled:cursor-not-allowed">
                             <IconUpload class="size-5" />
@@ -57,7 +57,7 @@
                         <!-- Import -->
                         <button @click="handleImport" :disabled="importing" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm
                     bg-bg-elevated border border-border text-text-secondary
-                    font-['DM_Mono'] cursor-pointer transition-all duration-150
+                    cursor-pointer transition-all duration-150
                     hover:bg-accent-dim hover:border-accent/40 hover:text-accent
                     disabled:opacity-40 disabled:cursor-not-allowed">
                             <IconLoaderCircle v-if="importing" class="size-5 animate-spin" />
@@ -86,12 +86,12 @@
                 <div class="bg-bg-surface border border-border-subtle rounded-xl overflow-hidden">
                     <div class="flex items-center justify-between px-4 py-3.25">
                         <span class="text-sm text-text-secondary">Version</span>
-                        <span class="text-sm text-text-muted font-['DM_Mono']">{{ appVersion }}</span>
+                        <span class="text-sm text-text-muted">{{ appVersion }}</span>
                     </div>
                     <div class="h-px bg-border-subtle mx-4" />
                     <div class="flex items-center justify-between px-4 py-3.25">
                         <span class="text-sm text-text-secondary">Speicher</span>
-                        <span class="text-sm text-text-muted font-['DM_Mono']">
+                        <span class="text-sm text-text-muted">
                             {{ itemCount }} Gegenstände · {{ locationCount }} Orte
                         </span>
                     </div>
@@ -105,7 +105,7 @@
             leave-active-class="transition-[opacity,transform] duration-200 ease-out"
             enter-from-class="opacity-0 translate-y-2" leave-to-class="opacity-0 translate-y-2">
             <div v-if="toast.visible" class="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4.5 py-2.75
-               rounded-[10px] font-['DM_Mono'] text-[13px whitespace-nowrap z-200 pointer-events-none border" :class="toast.type === 'success'
+               rounded-[10px] text-[13px whitespace-nowrap z-200 pointer-events-none border" :class="toast.type === 'success'
                 ? 'bg-accent/12 border-accent/30 text-accent'
                 : 'bg-danger-dim border-danger/30 text-danger'">
                 <span class="text-base leading-none">

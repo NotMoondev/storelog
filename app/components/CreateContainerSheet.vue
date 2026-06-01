@@ -2,15 +2,15 @@
     <Teleport to="body">
         <Transition name="sheet">
             <div v-if="open"
-                class="fixed inset-0 bg-black/75 backdrop-blur-xs z-100 flex items-end justify-center"
+                class="fixed inset-0 bg-black/75 backdrop-blur-xs z-100 flex items-end lg:items-center justify-center"
                 @click.self="$emit('close')">
 
                 <div
-                    class="w-full max-w-lg bg-bg-surface border-t border-border rounded-t-[20px] flex flex-col animate-slide-up"
+                    class="w-full max-w-lg bg-bg-surface border-t lg:border border-border rounded-t-[20px] lg:rounded-[20px] flex flex-col animate-slide-up lg:animate-fade-in"
                     style="padding-bottom: env(safe-area-inset-bottom, 0px)">
 
                     <!-- Drag handle -->
-                    <div class="flex justify-center pt-3 pb-1 shrink-0">
+                    <div class="lg:hidden flex justify-center pt-3 pb-1 shrink-0">
                         <div class="w-10 h-1 rounded-full bg-border" />
                     </div>
 
@@ -23,7 +23,7 @@
                         <div>
                             <div class="font-['Syne'] text-[18px] font-bold text-text-primary leading-tight">Container
                                 erstellen</div>
-                            <div class="font-['DM_Mono'] text-[11px] text-text-muted">Visueller Möbel-/Behälter-Editor
+                            <div class="text-[11px] text-text-muted">Visueller Möbel-/Behälter-Editor
                             </div>
                         </div>
                         <button @click="$emit('close')"
@@ -42,18 +42,18 @@
 
                         <!-- Name input -->
                         <div class="flex flex-col gap-2">
-                            <label class="font-['DM_Mono'] text-[11px] text-text-muted uppercase tracking-wider">
+                            <label class="text-[11px] text-text-muted uppercase tracking-wider">
                                 Name
                             </label>
                             <input ref="inputRef" v-model="name" type="text" autocomplete="off" spellcheck="false"
                                 placeholder="z.B. Kleiderschrank, Regal, Kommode…"
-                                class="bg-bg-elevated border border-border rounded-xl px-4 py-3.5 font-['DM_Mono'] text-[14px] text-text-primary outline-none w-full transition-all placeholder:text-text-muted focus:border-accent focus:shadow-[0_0_0_3px_var(--accent-glow)]"
+                                class="bg-bg-elevated border border-border rounded-xl px-4 py-3.5 text-[14px] text-text-primary outline-none w-full transition-all placeholder:text-text-muted focus:border-accent focus:shadow-[0_0_0_3px_var(--accent-glow)]"
                                 @keydown.escape="$emit('close')" />
                         </div>
 
                         <!-- Proportion -->
                         <div class="flex flex-col gap-3">
-                            <label class="font-['DM_Mono'] text-[11px] text-text-muted uppercase tracking-wider">
+                            <label class="text-[11px] text-text-muted uppercase tracking-wider">
                                 Beispiel Proportion (Breite : Höhe)
                             </label>
 
@@ -65,8 +65,8 @@
                                     :class="isActive(preset)
                                         ? 'bg-accent-dim border-accent/60 text-accent'
                                         : 'bg-bg-elevated border-border text-text-secondary hover:border-text-muted'">
-                                    <span class="font-['DM_Mono'] text-[13px]">{{ preset.label }}</span>
-                                    <span class="font-['DM_Mono'] text-[11px] opacity-60 ml-2">
+                                    <span class="text-[13px]">{{ preset.label }}</span>
+                                    <span class="text-[11px] opacity-60 ml-2">
                                         {{ preset.width }}×{{ preset.height }}
                                     </span>
                                 </button>
@@ -76,9 +76,9 @@
                             <div class="grid grid-cols-2 gap-4 mt-1">
                                 <div class="flex flex-col gap-2">
                                     <div class="flex justify-between items-center">
-                                        <span class="font-['DM_Mono'] text-[11px] text-text-muted uppercase tracking-wider">Breite</span>
+                                        <span class="text-[11px] text-text-muted uppercase tracking-wider">Breite</span>
                                         <span
-                                            class="font-['DM_Mono'] text-[13px] text-accent font-bold min-w-[1.5ch] text-right">{{
+                                            class="text-[13px] text-accent font-bold min-w-[1.5ch] text-right">{{
                                                 width }}</span>
                                     </div>
                                     <input type="range" min="1" max="10" v-model.number="width"
@@ -86,9 +86,9 @@
                                 </div>
                                 <div class="flex flex-col gap-2">
                                     <div class="flex justify-between items-center">
-                                        <span class="font-['DM_Mono'] text-[11px] text-text-muted uppercase tracking-wider">Höhe</span>
+                                        <span class="text-[11px] text-text-muted uppercase tracking-wider">Höhe</span>
                                         <span
-                                            class="font-['DM_Mono'] text-[13px] text-accent font-bold min-w-[1.5ch] text-right">{{
+                                            class="text-[13px] text-accent font-bold min-w-[1.5ch] text-right">{{
                                                 height }}</span>
                                     </div>
                                     <input type="range" min="1" max="10" v-model.number="height"
@@ -110,7 +110,7 @@
                                     <div v-for="i in width * height" :key="i"
                                         class="border-r border-b border-accent/40" />
                                 </div>
-                                <span class="font-['DM_Mono'] text-[11px] text-text-muted">
+                                <span class="text-[11px] text-text-muted">
                                     {{ width }} × {{ height }}
                                 </span>
                             </div>
@@ -129,8 +129,8 @@
                                 <IconCheck v-if="useGrid" :size="12" class="text-white" />
                             </div>
                             <div class="flex-1 min-w-0">
-                                <div class="font-['DM_Mono'] text-[13px]" :class="useGrid ? 'text-accent' : 'text-text-primary'">Grid direkt als Zonen übernehmen</div>
-                                <div class="font-['DM_Mono'] text-[11px] text-text-muted">
+                                <div class="text-[13px]" :class="useGrid ? 'text-accent' : 'text-text-primary'">Grid direkt als Zonen übernehmen</div>
+                                <div class="text-[11px] text-text-muted">
                                     Erstellt sofort {{ width * height }} {{ width * height === 1 ? 'Zone' : 'Zonen' }} entsprechend dem Raster
                                 </div>
                             </div>
@@ -141,11 +141,11 @@
                     <!-- Footer actions -->
                     <div class="px-5 pt-3 pb-5 flex gap-3 shrink-0 border-t border-border-subtle">
                         <button @click="$emit('close')"
-                            class="flex-1 py-3.5 rounded-xl font-['DM_Mono'] text-[14px] cursor-pointer border transition-all bg-bg-elevated text-text-secondary border-border active:scale-[0.97]">
+                            class="flex-1 py-3.5 rounded-xl text-[14px] cursor-pointer border transition-all bg-bg-elevated text-text-secondary border-border active:scale-[0.97]">
                             Abbrechen
                         </button>
                         <button :disabled="!name.trim() || saving" @click="submit"
-                            class="flex-1 py-3.5 rounded-xl font-['DM_Mono'] text-[14px] cursor-pointer border-none transition-all bg-accent text-white active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed">
+                            class="flex-1 py-3.5 rounded-xl text-[14px] cursor-pointer border-none transition-all bg-accent text-black active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed">
                             {{ saving ? '…' : 'Erstellen & öffnen' }}
                         </button>
                     </div>
