@@ -1,68 +1,30 @@
-import { useDB } from "./db"
-import type { Location } from "~/types"
-
-function generateId(): string {
-  return crypto.randomUUID()
-}
+import type { Location } from '~/types'
 
 export const locationRepository = {
   async getAll(): Promise<Location[]> {
-    const db = useDB()
-    return db.locations.orderBy("createdAt").toArray()
+    return $fetch<Location[]>('/api/locations')
   },
 
   async getById(id: string): Promise<Location | undefined> {
-    const db = useDB()
-    return db.locations.get(id)
+    const all = await this.getAll()
+    return all.find((l) => l.id === id)
   },
 
-  async create(data: Omit<Location, "id" | "createdAt">): Promise<Location> {
-    const db = useDB()
-    const location: Location = {
-      id: generateId(),
-      createdAt: Date.now(),
-      ...data,
-    }
-    await db.locations.add(location)
-    return location
+  async create(data: Omit<Location, 'id' | 'createdAt'>): Promise<Location> {
+    return $fetch<Location>('/api/locations', { method: 'POST', body: data })
   },
 
-  async update(
-    id: string,
-    data: Partial<Omit<Location, "id">>
-  ): Promise<void> {
-    const db = useDB()
-    await db.locations.update(id, data)
+  async update(id: string, data: Partial<Omit<Location, 'id'>>): Promise<void> {
+    await $fetch(`/api/locations/${id}`, { method: 'PUT', body: data })
   },
 
   async delete(id: string): Promise<void> {
-    const db = useDB()
-    // Reassign children to parent
-    const location = await db.locations.get(id)
-    if (location) {
-      const children = await db.locations
-        .where("parentId")
-        .equals(id)
-        .toArray()
-      for (const child of children) {
-        await db.locations.update(child.id, { parentId: location.parentId })
-      }
-      // Move items to parent or null
-      const items = await db.items.where("locationId").equals(id).toArray()
-      for (const item of items) {
-        if (location.parentId) {
-          await db.items.update(item.id, { locationId: location.parentId })
-        }
-      }
-    }
-    await db.locations.delete(id)
+    await $fetch(`/api/locations/${id}`, { method: 'DELETE' })
   },
 
   async getChildren(parentId: string | null): Promise<Location[]> {
-    const db = useDB()
-    if (parentId === null) {
-      return db.locations.where("parentId").equals("").toArray()
-    }
-    return db.locations.where("parentId").equals(parentId).toArray()
+    const all = await this.getAll()
+    if (parentId === null) return all.filter((l) => !l.parentId)
+    return all.filter((l) => l.parentId === parentId)
   },
 }
