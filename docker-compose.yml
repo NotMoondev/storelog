@@ -1,0 +1,13 @@
+services:
+  storelog:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - storelog-data:/data
+    environment:
+      DATABASE_PATH: /data/storelog.db
+    restart: unless-stopped
+
+volumes:
+  storelog-data:

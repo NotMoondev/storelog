@@ -32,6 +32,13 @@ export default defineNuxtConfig({
         },
     },
 
+    nitro: {
+        rollupConfig: {
+            // @ts-ignore
+            external: ['better-sqlite3'],
+        },
+    },
+
     modules: ["@vite-pwa/nuxt", "nuxt-lucide-icons"],
 
     pwa: {

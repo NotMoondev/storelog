@@ -1,5 +1,4 @@
 import type { Location, Item } from '~/types'
-import { useDB } from '~/repositories/db'
 
 interface ExportData {
   version: number
@@ -19,13 +18,7 @@ export function useDataTransfer() {
     exporting.value = true
     error.value = null
     try {
-      const db = useDB()
-      const data: ExportData = {
-        version: 1,
-        exportedAt: new Date().toISOString(),
-        locations: await db.locations.toArray(),
-        items: await db.items.toArray(),
-      }
+      const data = await $fetch<ExportData>('/api/export')
 
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
@@ -63,13 +56,7 @@ export function useDataTransfer() {
         throw new Error('Ungültiges Export-Format.')
       }
 
-      const db = useDB()
-      await db.transaction('rw', [db.locations, db.items], async () => {
-        await db.locations.clear()
-        await db.items.clear()
-        if (data.locations.length) await db.locations.bulkAdd(data.locations)
-        if (data.items.length) await db.items.bulkAdd(data.items)
-      })
+      await $fetch('/api/import', { method: 'POST', body: { locations: data.locations, items: data.items } })
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Import fehlgeschlagen.'
       throw e
