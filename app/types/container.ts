@@ -1,3 +1,5 @@
+import type { Authored } from "~/types"
+
 export type SplitDirection = "vsplit" | "hsplit"
 
 export interface ContainerLeafNode {
@@ -23,7 +25,7 @@ export interface ContainerDimensions {
     height: number // relative height
 }
 
-export interface Container {
+export interface Container extends Authored {
     id: string
     name: string
     locationId: string      // the parent Location this container belongs to

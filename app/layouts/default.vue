@@ -39,8 +39,18 @@
                 </NuxtLink>
             </nav>
 
-            <!-- Settings at bottom -->
-            <div class="px-3 py-4 border-t border-border-subtle">
+            <!-- Current user + settings at bottom -->
+            <div class="px-3 py-4 border-t border-border-subtle flex flex-col gap-1">
+                <button v-if="currentUser" @click="switchUserOpen = true"
+                    class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-transparent border-none cursor-pointer text-left transition-colors text-text-muted hover:text-text-primary hover:bg-bg-hover"
+                    title="Name ändern">
+                    <UserBadge :user-id="currentUser.id" :show-name="false" size="sm" />
+                    <span class="flex-1 min-w-0">
+                        <span class="block text-[13px] font-medium text-text-primary truncate">{{ currentUser.name }}</span>
+                        <span class="block text-[11px] text-text-muted">Angemeldet</span>
+                    </span>
+                    <Repeat2 :size="15" class="shrink-0" />
+                </button>
                 <NuxtLink
                     to="/settings"
                     class="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors text-sm font-medium"
@@ -62,12 +72,19 @@
                     </span>
                     STORELOG
                 </NuxtLink>
-                <NuxtLink
-                    to="/settings"
-                    :class="$route.path.startsWith('/settings') ? 'text-accent' : 'text-text-muted'"
-                >
-                    <Settings :size="20" />
-                </NuxtLink>
+                <div class="flex items-center gap-3">
+                    <button v-if="currentUser" @click="switchUserOpen = true"
+                        class="bg-transparent border-none p-0 cursor-pointer flex items-center"
+                        title="Name ändern">
+                        <UserBadge :user-id="currentUser.id" :show-name="false" size="sm" />
+                    </button>
+                    <NuxtLink
+                        to="/settings"
+                        :class="$route.path.startsWith('/settings') ? 'text-accent' : 'text-text-muted'"
+                    >
+                        <Settings :size="20" />
+                    </NuxtLink>
+                </div>
             </div>
         </header>
 
@@ -117,9 +134,21 @@
             </div>
         </div>
 
+        <!-- One-time name setup – blocks the app until an identity exists -->
+        <UserSetupSheet v-if="ready && !isIdentified" mode="setup" />
+
+        <!-- Switch identity -->
+        <UserSetupSheet v-if="switchUserOpen" mode="switch" @close="switchUserOpen = false" />
+
     </div>
 </template>
 
 <script setup lang="ts">
-import { Home, Search, MapPin, Settings } from 'lucide-vue-next'
+import { Home, Search, MapPin, Settings, Repeat2 } from 'lucide-vue-next'
+
+const { currentUser, ready, isIdentified, init } = useUser()
+
+const switchUserOpen = ref(false)
+
+onMounted(() => init())
 </script>

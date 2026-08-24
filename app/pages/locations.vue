@@ -120,6 +120,14 @@
                             <div v-if="selectedLocation.parentId" class="text-[13px] text-accent mt-1">
                                 {{ getLocationPath(selectedLocation.id).join(' › ') }}
                             </div>
+                            <div class="flex items-center flex-wrap gap-x-2 gap-y-1 mt-2 text-[11px] text-text-muted">
+                                <span>Erstellt von</span>
+                                <UserBadge :user-id="selectedLocation.createdBy" />
+                                <template v-if="lastEditOf(selectedLocation)">
+                                    <span>· bearbeitet von</span>
+                                    <UserBadge :user-id="lastEditOf(selectedLocation)!.by" />
+                                </template>
+                            </div>
                         </div>
                         <div class="flex items-center gap-1.5 shrink-0">
                             <button v-if="selectedContainer" @click="openContainerEditor(selectedContainer!)"
@@ -179,9 +187,12 @@
                     </div>
                     <ul v-else class="m-0 p-0 list-none flex flex-col gap-1.5">
                         <li v-for="item in selectedLocationItemsFiltered" :key="item.id"
-                            class="px-4 py-3 bg-bg-surface rounded-xl border border-border text-[14px] text-text-primary">
-                            {{ item.name }}
-                            <div v-if="item.note" class="text-[12px] text-text-muted mt-0.5">{{ item.note }}</div>
+                            class="px-4 py-3 bg-bg-surface rounded-xl border border-border flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="text-[14px] text-text-primary">{{ item.name }}</div>
+                                <div v-if="item.note" class="text-[12px] text-text-muted mt-0.5">{{ item.note }}</div>
+                            </div>
+                            <UserBadge :user-id="item.createdBy" class="shrink-0 mt-0.5" />
                         </li>
                     </ul>
                 </div>
@@ -209,6 +220,15 @@
                                 locationDetail.location?.name }}</div>
                             <div v-if="locationDetail.location?.parentId" class="text-[13px] text-accent mt-0.5">
                                 {{ getLocationPath(locationDetail.location.id).join(' › ') }}
+                            </div>
+                            <div v-if="locationDetail.location"
+                                class="flex items-center flex-wrap gap-x-2 gap-y-1 mt-2 text-[11px] text-text-muted">
+                                <span>Erstellt von</span>
+                                <UserBadge :user-id="locationDetail.location.createdBy" />
+                                <template v-if="lastEditOf(locationDetail.location)">
+                                    <span>· bearbeitet von</span>
+                                    <UserBadge :user-id="lastEditOf(locationDetail.location)!.by" />
+                                </template>
                             </div>
                         </div>
                         <!-- Rename state -->
@@ -258,9 +278,12 @@
                     </div>
                     <ul v-else class="m-0 p-0 list-none overflow-y-auto flex-1">
                         <li v-for="item in locationItems" :key="item.id"
-                            class="px-5 py-3.5 border-b border-border-subtle text-[15px] text-text-primary last:border-none">
-                            {{ item.name }}
-                            <div v-if="item.note" class="text-[12px] text-text-muted mt-0.5">{{ item.note }}</div>
+                            class="px-5 py-3.5 border-b border-border-subtle last:border-none flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="text-[15px] text-text-primary">{{ item.name }}</div>
+                                <div v-if="item.note" class="text-[12px] text-text-muted mt-0.5">{{ item.note }}</div>
+                            </div>
+                            <UserBadge :user-id="item.createdBy" class="shrink-0 mt-1" />
                         </li>
                     </ul>
 
@@ -318,10 +341,19 @@
 
 <script setup lang="ts">
 import type { Container } from '~/types/container'
+import type { Authored } from '~/types'
 
 const { flatList, getLocationPath, createLocation, updateLocation, deleteLocation, load } = useLocations()
 const { items } = useItems()
 const { containers, createContainer, buildGridTree, getContainerByLocationId, load: loadContainers } = useContainers()
+
+// ── Authorship ────────────────────────────────────────────────────────────────
+
+/** `updatedAt` is only set by a real edit, never on create. */
+function lastEditOf(record: Authored) {
+    if (!record.updatedAt) return null
+    return { at: record.updatedAt, by: record.updatedBy ?? null }
+}
 
 // ── Search ────────────────────────────────────────────────────────────────────
 

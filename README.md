@@ -13,6 +13,12 @@ Hierarchische Struktur von Orten, z. B. Zimmer → Schrank → Schublade → Box
 ### Schnelles Hinzufügen
 Gegenstände können mit minimalem Aufwand erfasst werden: Name eingeben, Ort auswählen, speichern.
 
+### Benutzer ohne Login
+Beim ersten Start gibt man einmalig einen Namen ein – kein Konto, kein Passwort.
+Jeder Gegenstand, Ort und Container speichert, wer ihn erstellt und wer ihn zuletzt
+bearbeitet hat. Auf einem weiteren Gerät genügt derselbe Name, um dort als dieselbe
+Person weiterzuarbeiten. Groß- und Kleinschreibung spielt dabei keine Rolle.
+
 ### Offline-Nutzung
 Die Anwendung funktioniert vollständig ohne Internetverbindung. Alle Daten werden lokal gespeichert.
 

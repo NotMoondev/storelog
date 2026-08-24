@@ -47,6 +47,9 @@
                             {{ seg }}
                         </span>
                     </div>
+                    <div class="flex items-center gap-1.5 mt-2">
+                        <UserBadge :user-id="item.createdBy" />
+                    </div>
                 </div>
             </TransitionGroup>
 

@@ -1,4 +1,5 @@
 import type { Container, ContainerNode, ContainerLeafNode } from "~/types/container"
+import { api } from "~/utils/api"
 
 function generateId(): string {
     return crypto.randomUUID()
@@ -86,7 +87,7 @@ function _buildGridNode(
 
 export const containerRepository = {
     async getAll(): Promise<Container[]> {
-        return $fetch<Container[]>('/api/containers')
+        return api<Container[]>('/api/containers')
     },
 
     async getById(id: string): Promise<Container | undefined> {
@@ -95,22 +96,22 @@ export const containerRepository = {
     },
 
     async getByLocationId(locationId: string): Promise<Container | undefined> {
-        return $fetch<Container | null>(`/api/containers/by-location/${locationId}`).then((r) => r ?? undefined)
+        return api<Container | null>(`/api/containers/by-location/${locationId}`).then((r) => r ?? undefined)
     },
 
     async create(data: Omit<Container, "id" | "createdAt">): Promise<Container> {
-        return $fetch<Container>('/api/containers', { method: 'POST', body: data })
+        return api<Container>('/api/containers', { method: 'POST', body: data })
     },
 
     async update(id: string, rootNode: ContainerNode): Promise<void> {
-        await $fetch(`/api/containers/${id}`, { method: 'PUT', body: { rootNode } })
+        await api(`/api/containers/${id}`, { method: 'PUT', body: { rootNode } })
     },
 
     async renameZone(containerId: string, leafId: string, name: string): Promise<void> {
-        await $fetch(`/api/containers/${containerId}/rename-zone`, { method: 'PUT', body: { leafId, name } })
+        await api(`/api/containers/${containerId}/rename-zone`, { method: 'PUT', body: { leafId, name } })
     },
 
     async delete(id: string): Promise<void> {
-        await $fetch(`/api/containers/${id}`, { method: 'DELETE' })
+        await api(`/api/containers/${id}`, { method: 'DELETE' })
     },
 }

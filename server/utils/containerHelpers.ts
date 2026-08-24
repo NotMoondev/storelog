@@ -32,23 +32,33 @@ export function syncLeafLocations(
   node: ContainerNode,
   parentLocationId: string,
   db: Database.Database,
+  actorId: string | null = null,
 ): ContainerNode {
+  const now = Date.now()
   if (node.type === 'leaf') {
     if (node.locationId) {
-      db.prepare('UPDATE locations SET name = ? WHERE id = ?').run(node.name, node.locationId)
+      // Every container save walks all zones – only a real rename counts as an edit.
+      const row = db.prepare('SELECT name FROM locations WHERE id = ?').get(node.locationId) as
+        | { name: string }
+        | undefined
+      if (row && row.name !== node.name) {
+        db.prepare('UPDATE locations SET name = ?, updated_by = ?, updated_at = ? WHERE id = ?')
+          .run(node.name, actorId, now, node.locationId)
+      }
       return node
     }
     const id = crypto.randomUUID()
     db.prepare(
-      'INSERT INTO locations (id, name, parent_id, created_at) VALUES (?, ?, ?, ?)',
-    ).run(id, node.name, parentLocationId, Date.now())
+      `INSERT INTO locations (id, name, parent_id, created_at, created_by)
+       VALUES (?, ?, ?, ?, ?)`,
+    ).run(id, node.name, parentLocationId, now, actorId)
     return { ...node, locationId: id }
   }
   return {
     ...node,
     children: [
-      syncLeafLocations(node.children[0], parentLocationId, db),
-      syncLeafLocations(node.children[1], parentLocationId, db),
+      syncLeafLocations(node.children[0], parentLocationId, db, actorId),
+      syncLeafLocations(node.children[1], parentLocationId, db, actorId),
     ],
   } as ContainerNode
 }

@@ -1,8 +1,10 @@
-import type { Location, Item } from '~/types'
+import type { Location, Item, AppUser } from '~/types'
+import { api } from '~/utils/api'
 
 interface ExportData {
   version: number
   exportedAt: string
+  users?: AppUser[]
   locations: Location[]
   items: Item[]
 }
@@ -18,7 +20,7 @@ export function useDataTransfer() {
     exporting.value = true
     error.value = null
     try {
-      const data = await $fetch<ExportData>('/api/export')
+      const data = await api<ExportData>('/api/export')
 
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
@@ -56,7 +58,10 @@ export function useDataTransfer() {
         throw new Error('Ungültiges Export-Format.')
       }
 
-      await $fetch('/api/import', { method: 'POST', body: { locations: data.locations, items: data.items } })
+      await api('/api/import', {
+        method: 'POST',
+        body: { users: data.users ?? [], locations: data.locations, items: data.items },
+      })
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Import fehlgeschlagen.'
       throw e

@@ -72,8 +72,19 @@
                 </div>
 
                 <!-- Meta -->
-                <div class="px-5 py-3 text-[12px] text-text-muted tracking-[0.02em] shrink-0">
-                    Hinzugefügt: {{ formatDate(localItem.createdAt) }}
+                <div class="px-5 py-3 flex flex-col gap-2 shrink-0">
+                    <div class="flex items-center flex-wrap gap-x-2 gap-y-1 text-[12px] text-text-muted">
+                        <IconPlus :size="12" class="shrink-0" />
+                        <span>Hinzugefügt von</span>
+                        <UserBadge :user-id="localItem.createdBy" />
+                        <span class="tabular-nums">· {{ formatDate(localItem.createdAt) }}</span>
+                    </div>
+                    <div v-if="lastEdit" class="flex items-center flex-wrap gap-x-2 gap-y-1 text-[12px] text-text-muted">
+                        <IconPen :size="12" class="shrink-0" />
+                        <span>Bearbeitet von</span>
+                        <UserBadge :user-id="lastEdit.by" />
+                        <span class="tabular-nums">· {{ formatDate(lastEdit.at) }}</span>
+                    </div>
                 </div>
 
                 <!-- Footer -->
@@ -132,7 +143,16 @@ const editForm = reactive({
     note: props.item.note || "",
 });
 
+const { currentUser } = useUser()
+
 const locationPath = computed(() => getLocationPath(localItem.value.locationId).join(" / "))
+
+/** `updatedAt` is only set by a real edit, never on create. */
+const lastEdit = computed(() => {
+    const { updatedAt, updatedBy } = localItem.value
+    if (!updatedAt) return null
+    return { at: updatedAt, by: updatedBy ?? null }
+})
 const selectedEditLocation = computed(() => flatList.value.find((l) => l.id === editForm.locationId))
 
 function startEdit() {
@@ -161,6 +181,8 @@ async function saveEdit() {
             name: editForm.name.trim(),
             locationId: editForm.locationId,
             note: editForm.note.trim() || undefined,
+            updatedBy: currentUser.value?.id ?? null,
+            updatedAt: Date.now(),
         }
         editing.value = false
     } finally {
