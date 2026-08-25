@@ -26,7 +26,7 @@
                         <IconX :size="15" />
                     </button>
                 </div>
-                <button type="button" @click="openQuickAdd()" aria-label="Gegenstand hinzufügen"
+                <button type="button" @click="openCreateMenu()" aria-label="Neu anlegen"
                     class="hidden lg:flex items-center gap-1.5 h-12 px-4 bg-accent text-black rounded-2xl border-none cursor-pointer text-[13px] font-medium shrink-0 transition-all hover:brightness-110 active:scale-95">
                     <IconPlus :size="15" />
                     Neu
@@ -105,6 +105,7 @@ const { ensureLoaded: loadLocations } = useLocations()
 const { ensureLoaded: loadContainers } = useContainers()
 const { query, results, locationResults, clearQuery } = useSearch()
 const { openQuickAdd } = useQuickAdd()
+const { openCreateMenu } = useCreateMenu()
 
 const inputRef = ref<HTMLInputElement>()
 const listRef = ref<HTMLElement>()

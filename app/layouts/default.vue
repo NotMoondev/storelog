@@ -18,10 +18,10 @@
                     <component :is="link.icon" :size="18" />
                     {{ link.label }}
                 </NuxtLink>
-                <button type="button" @click="openQuickAdd()"
+                <button type="button" @click="openCreateMenu()"
                     class="mt-2 flex items-center gap-3 px-3 py-2.5 rounded-xl border-none cursor-pointer text-sm font-medium bg-accent text-black transition-all hover:brightness-110 active:scale-[0.98]">
                     <Plus :size="18" />
-                    Gegenstand
+                    Neu
                 </button>
             </nav>
 
@@ -87,7 +87,7 @@
                             <component :is="link.icon" :size="20" />
                             <span class="text-[10px] font-medium">{{ link.label }}</span>
                         </NuxtLink>
-                        <button type="button" @click="openQuickAdd()" aria-label="Gegenstand hinzufügen"
+                        <button type="button" @click="openCreateMenu()" aria-label="Neu anlegen"
                             class="flex-1 flex flex-col items-center py-2.5 gap-0.5 bg-transparent border-none border-l border-border cursor-pointer text-accent transition-colors">
                             <Plus :size="20" />
                             <span class="text-[10px] font-medium">Neu</span>
@@ -96,6 +96,12 @@
                 </nav>
             </div>
         </div>
+
+        <CreatePickerSheet :open="createMenuOpen" with-item @close="closeCreateMenu" @pick="onCreatePick" />
+        <CreateLocationSheet :open="newLocationOpen" :parent-id="null" @close="newLocationOpen = false"
+            @created="onLocationCreated" />
+        <CreateContainerSheet :open="newContainerOpen" :parent-id="null" @close="newContainerOpen = false"
+            @created="onContainerCreated" />
 
         <AddItemSheet v-if="quickAddOpen" :preset-location-id="presetLocationId" @close="closeQuickAdd" />
 
@@ -106,6 +112,8 @@
 
 <script setup lang="ts">
 import { Search, MapPin, Settings, Repeat2, Plus } from 'lucide-vue-next'
+import type { Location } from '~/types'
+import type { CreateKind } from '~/components/CreatePickerSheet.vue'
 
 const { currentUser, ready, isIdentified, init } = useUser()
 const route = useRoute()
@@ -123,6 +131,40 @@ function isActive(link: { to: string; exact: boolean }) {
 
 const { initTheme } = useTheme()
 const { open: quickAddOpen, presetLocationId, openQuickAdd, closeQuickAdd } = useQuickAdd()
+
+// The nav's "Neu" leads to all three creatable things; the sheets live here so
+// every page inherits the same flow.
+const { open: createMenuOpen, openCreateMenu, closeCreateMenu } = useCreateMenu()
+const newLocationOpen = ref(false)
+const newContainerOpen = ref(false)
+
+const router = useRouter()
+const { createLocation } = useLocations()
+const { createContainer, buildGridTree } = useContainers()
+
+function onCreatePick(type: CreateKind) {
+    if (type === 'item') openQuickAdd()
+    else if (type === 'location') newLocationOpen.value = true
+    else newContainerOpen.value = true
+}
+
+function onLocationCreated(created: Location) {
+    newLocationOpen.value = false
+    router.push(`/orte/${created.id}`)
+}
+
+/** A container is a location plus its layout, so both rows are written here. */
+async function onContainerCreated(name: string, width: number, height: number, useGrid: boolean) {
+    newContainerOpen.value = false
+    const created = await createLocation(name, null)
+    await createContainer(
+        name,
+        created.id,
+        { unit: 'ratio', width, height },
+        useGrid ? buildGridTree(width, height) : undefined
+    )
+    router.push(`/orte/${created.id}`)
+}
 
 onMounted(() => {
     init()

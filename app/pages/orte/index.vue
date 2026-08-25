@@ -1,39 +1,53 @@
 <template>
+    <!--
+        Order, not DOM order: the filter belongs directly above the nav on a
+        phone so the thumb reaches it, and in its conventional place under the
+        heading on a desktop. The markup stays heading → list → filter.
+    -->
     <div class="flex flex-col h-full min-h-0">
 
-        <!-- Header -->
-        <div class="shrink-0 px-4 lg:px-8 pt-4 lg:pt-6 pb-3 flex flex-col gap-3 border-b border-border-subtle">
-            <div class="lg:max-w-4xl lg:mx-auto w-full flex items-center gap-3">
+        <!-- Heading -->
+        <header
+            class="order-1 shrink-0 px-4 lg:px-8 pt-4 lg:pt-6 pb-3 border-b border-border-subtle lg:border-b-0">
+            <div class="lg:max-w-4xl lg:mx-auto w-full flex items-end gap-3">
                 <div class="min-w-0">
                     <p class="text-[11px] text-text-secondary/70 tracking-[0.12em] uppercase">Übersicht</p>
                     <h1 class="font-['Syne'] text-[22px] lg:text-[26px] font-bold text-text-primary leading-tight">
                         Deine Orte
                     </h1>
                 </div>
-                <button type="button" @click="createPickerOpen = true"
-                    class="ml-auto flex items-center gap-1.5 h-10 px-3.5 bg-accent text-black rounded-xl border-none cursor-pointer text-[13px] font-medium shrink-0 transition-all hover:brightness-110 active:scale-95">
-                    <IconPlus :size="15" />
-                    Ort
-                </button>
+                <p v-if="roots.length" class="ml-auto shrink-0 text-[12px] text-text-muted tabular-nums pb-1">
+                    {{ locationCount(roots.length) }}
+                </p>
             </div>
+        </header>
 
-            <div class="lg:max-w-4xl lg:mx-auto w-full flex items-center gap-2.5 bg-bg-surface border border-border rounded-xl px-3 h-10 transition-all focus-within:border-accent focus-within:shadow-[0_0_0_3px_var(--accent-glow)]">
-                <IconSearch :size="15" class="text-text-muted shrink-0" />
+        <!-- Filter -->
+        <div
+            class="order-3 lg:order-2 shrink-0 relative z-10 px-4 pt-2 pb-2 lg:px-8 lg:pt-0 lg:pb-3 lg:border-b lg:border-border-subtle bg-bg">
+            <!-- Softens the scroll edge where the list runs under the field. -->
+            <div class="lg:hidden pointer-events-none absolute inset-x-0 -top-6 h-6"
+                style="background: linear-gradient(to top, var(--bg), transparent)" />
+            <div class="lg:max-w-4xl lg:mx-auto w-full flex items-center gap-2.5 bg-bg-surface border rounded-2xl px-3.5 h-12 transition-all duration-150"
+                :class="filter
+                    ? 'border-accent shadow-[0_0_0_3px_var(--accent-glow)]'
+                    : 'border-border focus-within:border-accent focus-within:shadow-[0_0_0_3px_var(--accent-glow)]'">
+                <IconSearch :size="17" class="text-text-muted shrink-0" />
                 <input v-model="filter" type="text" placeholder="Ort filtern…" autocomplete="off" spellcheck="false"
                     aria-label="Orte filtern"
-                    class="flex-1 min-w-0 bg-transparent border-none outline-none text-[13.5px] text-text-primary placeholder:text-text-muted" />
+                    class="flex-1 min-w-0 bg-transparent border-none outline-none text-[15px] text-text-primary placeholder:text-text-muted" />
                 <button v-if="filter" type="button" aria-label="Filter leeren" @click="filter = ''"
                     class="bg-transparent border-none text-text-muted cursor-pointer p-1 hover:text-text-secondary transition-colors">
-                    <IconX :size="14" />
+                    <IconX :size="15" />
                 </button>
             </div>
         </div>
 
-        <!-- Body -->
-        <div class="flex-1 min-h-0 overflow-y-auto px-4 lg:px-8 py-4 lg:py-6">
+        <!-- List -->
+        <div class="order-2 lg:order-3 flex-1 min-h-0 overflow-y-auto px-4 lg:px-8 py-4 lg:py-6">
             <div class="lg:max-w-4xl lg:mx-auto flex flex-col gap-2">
 
-                <p v-if="filter" class="text-[11px] text-text-secondary/70 tracking-[0.12em] uppercase px-0.5 mb-1">
+                <p v-if="filter" class="text-[11px] text-text-secondary/70 tracking-[0.12em] uppercase px-0.5">
                     {{ shown.length }} Treffer im gesamten Baum
                 </p>
 
@@ -57,35 +71,27 @@
                     <p class="text-[13px] text-text-muted max-w-65 leading-relaxed">
                         Fang mit einem Raum an — Schränke, Kisten und Fächer kommen als Unterorte hinein.
                     </p>
-                    <button type="button" @click="createPickerOpen = true"
+                    <button type="button" @click="openCreateMenu()"
                         class="mt-2 px-5 py-2.5 bg-accent text-black border-none rounded-xl text-[13px] font-medium cursor-pointer transition-all hover:brightness-110 active:scale-95">
                         Ersten Ort erstellen
                     </button>
                 </div>
             </div>
         </div>
-
-        <CreatePickerSheet :open="createPickerOpen" @close="createPickerOpen = false" @pick="onPick" />
-        <CreateLocationSheet :open="createSheetOpen" :parent-id="null" @close="createSheetOpen = false"
-            @created="onLocationCreated" />
-        <CreateContainerSheet :open="createContainerOpen" :parent-id="null" @close="createContainerOpen = false"
-            @created="onContainerCreated" />
     </div>
 </template>
 
 <script setup lang="ts">
 import type { Location } from "~/types"
+import { locationCount } from "~/utils/plural"
 
-const router = useRouter()
-const { locations, ensureLoaded: loadLocations, createLocation } = useLocations()
+const { locations, ensureLoaded: loadLocations } = useLocations()
 const { ensureLoaded: loadItems } = useItems()
-const { ensureLoaded: loadContainers, createContainer, buildGridTree } = useContainers()
+const { ensureLoaded: loadContainers } = useContainers()
 const { childrenOf, zoneLocationIds, getLocationPath } = useTopology()
+const { openCreateMenu } = useCreateMenu()
 
 const filter = ref("")
-const createPickerOpen = ref(false)
-const createSheetOpen = ref(false)
-const createContainerOpen = ref(false)
 
 const roots = computed(() => childrenOf(null))
 
@@ -101,28 +107,6 @@ const shown = computed<Location[]>(() => {
         )
         .sort((a, b) => a.name.localeCompare(b.name, "de"))
 })
-
-function onPick(type: "location" | "container") {
-    if (type === "location") createSheetOpen.value = true
-    else createContainerOpen.value = true
-}
-
-function onLocationCreated(location?: Location) {
-    createSheetOpen.value = false
-    if (location?.id) router.push(`/orte/${location.id}`)
-}
-
-async function onContainerCreated(name: string, width: number, height: number, useGrid: boolean) {
-    createContainerOpen.value = false
-    const location = await createLocation(name, null)
-    await createContainer(
-        name,
-        location.id,
-        { unit: "ratio", width, height },
-        useGrid ? buildGridTree(width, height) : undefined
-    )
-    router.push(`/orte/${location.id}`)
-}
 
 onMounted(() => {
     loadLocations()

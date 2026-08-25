@@ -284,6 +284,7 @@ import { collectLeaves } from "~/repositories/containerRepository"
 import { Pen, CornerUpRight, CornerUpLeft, Trash2 } from "lucide-vue-next"
 import { errorMessage } from "~/utils/errorMessage"
 import { itemCount, subLocationCount, zoneCount } from "~/utils/plural"
+import type { CreateKind } from "~/components/CreatePickerSheet.vue"
 
 interface ItemGroup {
     locationId: string
@@ -483,9 +484,10 @@ async function commitRename() {
     renaming.value = false
 }
 
-function onCreatePick(type: "location" | "container") {
+/** The sheet only offers the two location kinds here — no item branch. */
+function onCreatePick(type: CreateKind) {
     if (type === "location") createSubOpen.value = true
-    else createContainerOpen.value = true
+    else if (type === "container") createContainerOpen.value = true
 }
 
 function onSubLocationCreated(created: Location) {
