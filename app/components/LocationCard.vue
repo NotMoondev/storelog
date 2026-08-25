@@ -1,5 +1,10 @@
 <template>
-    <component :is="to ? 'NuxtLink' : 'button'" :to="to" :type="to ? undefined : 'button'"
+    <!--
+        A plain <NuxtLink>, not <component :is="'NuxtLink'">: resolving a global
+        component from a string silently falls back to a custom element, which
+        renders a dead <nuxtlink> tag with no href.
+    -->
+    <NuxtLink :to="to"
         class="group flex items-center gap-3 w-full text-left bg-bg-surface border border-border rounded-2xl px-3 py-3 transition-all duration-150 cursor-pointer hover:border-accent/50 hover:bg-bg-elevated active:scale-[0.99]">
 
         <LocationGlyph :container="container" :own="counts.own" :child-count="childCount" :size="44" />
@@ -27,7 +32,7 @@
 
         <IconChevronRight :size="18"
             class="shrink-0 text-text-muted transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-accent" />
-    </component>
+    </NuxtLink>
 </template>
 
 <script setup lang="ts">
@@ -38,8 +43,8 @@ import { itemCount, subLocationCount, zoneCount } from "~/utils/plural"
 
 const props = withDefaults(defineProps<{
     location: Location
-    /** Omit to render a plain button and handle navigation yourself. */
-    to?: string
+    /** Target route for this card. */
+    to: string
     query?: string
     showPath?: boolean
 }>(), { showPath: false })
