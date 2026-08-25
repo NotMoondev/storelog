@@ -32,6 +32,18 @@ export interface ItemWithPath extends Item {
   locationNames: string[]
 }
 
+/**
+ * An item plus everything a card needs to draw itself: the breadcrumb, and —
+ * when it sits inside a container — the container and the zone to spotlight.
+ */
+export interface ItemView extends ItemWithPath {
+  container?: ContainerRef
+  zoneLocationId?: string
+}
+
+/** Structural view of `~/types/container`.Container, kept loose to avoid a cycle. */
+export type ContainerRef = import("./container").Container
+
 export interface LocationNode extends Location {
   children: LocationNode[]
   depth: number

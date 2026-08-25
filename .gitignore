@@ -22,3 +22,8 @@ logs
 .env
 .env.*
 !.env.example
+
+# Local SQLite database. The server creates data/ on first run, and in Docker
+# it lives in a mounted volume — nothing here belongs in the repository.
+# The -wal and -shm siblings are transient and meaningless on their own.
+data/

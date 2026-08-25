@@ -45,7 +45,7 @@
                             <UserBadge :user-id="user.id" :show-name="false" size="sm" />
                             <span class="flex-1 min-w-0 truncate text-sm text-text-primary">{{ user.name }}</span>
                             <span class="text-xs text-text-muted shrink-0 tabular-nums">
-                                {{ user.itemCount }} Gegenstand{{ user.itemCount !== 1 ? 'e' : '' }}
+                                {{ user.itemCount }} Gegenst{{ user.itemCount === 1 ? 'and' : 'ände' }}
                                 · {{ user.locationCount }} Ort{{ user.locationCount !== 1 ? 'e' : '' }}
                             </span>
                         </div>

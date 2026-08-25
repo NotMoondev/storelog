@@ -32,6 +32,12 @@ export default defineNuxtConfig({
         },
     },
 
+    // The two pages these used to serve now live at / and /orte.
+    routeRules: {
+        "/search": { redirect: { to: "/", statusCode: 301 } },
+        "/locations": { redirect: { to: "/orte", statusCode: 301 } },
+    },
+
     nitro: {
         rollupConfig: {
             // @ts-ignore

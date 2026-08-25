@@ -54,6 +54,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Location } from '~/types'
 import { useLocations } from '~/composables/useLocations'
 
 const props = defineProps<{
@@ -63,7 +64,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     close: []
-    created: []
+    created: [location: Location]
 }>()
 
 const { getLocationPath, createLocation } = useLocations()
@@ -84,8 +85,8 @@ async function submit() {
     if (!name.value.trim() || saving.value) return
     saving.value = true
     try {
-        await createLocation(name.value.trim(), props.parentId ?? null)
-        emit('created')
+        const created = await createLocation(name.value.trim(), props.parentId ?? null)
+        emit('created', created)
         emit('close')
     } finally {
         saving.value = false

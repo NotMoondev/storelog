@@ -1,4 +1,5 @@
 import type { Location } from '~/types'
+import type { DissolveImpact, DissolvePlan, DissolveResult } from '~/types/dissolve'
 import { api } from '~/utils/api'
 
 export const locationRepository = {
@@ -21,6 +22,16 @@ export const locationRepository = {
 
   async delete(id: string): Promise<void> {
     await api(`/api/locations/${id}`, { method: 'DELETE' })
+  },
+
+  /** Preview of what dissolving this location would affect. */
+  async impact(id: string): Promise<DissolveImpact> {
+    return api<DissolveImpact>(`/api/locations/${id}/impact`)
+  },
+
+  /** Take the location apart following an explicit per-row plan. */
+  async dissolve(id: string, plan: DissolvePlan): Promise<DissolveResult> {
+    return api<DissolveResult>(`/api/locations/${id}/dissolve`, { method: 'POST', body: plan })
   },
 
   async getChildren(parentId: string | null): Promise<Location[]> {
