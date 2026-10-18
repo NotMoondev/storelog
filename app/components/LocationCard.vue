@@ -1,44 +1,46 @@
 <template>
     <!--
-        A plain <NuxtLink>, not <component :is="'NuxtLink'">: resolving a global
-        component from a string silently falls back to a custom element, which
-        renders a dead <nuxtlink> tag with no href.
+        LocationRow. A plain <NuxtLink>, not <component :is="'NuxtLink'">: resolving
+        a global component from a string silently falls back to a custom element,
+        which renders a dead <nuxtlink> tag with no href.
 
-        Same surface, border and type as an item row on purpose — a place is set
-        apart by the size of its plan, not by a palette of its own.
+        Set apart from an item row by shape (taller, larger radius, chevron), not
+        by colour. A long press opens this place's actions without opening it.
     -->
     <NuxtLink :to="to"
-        class="group flex items-center gap-3 w-full text-left bg-bg-surface border border-border rounded-2xl px-3 py-3 transition-all duration-150 cursor-pointer hover:border-accent/50 hover:bg-bg-elevated active:scale-[0.99]">
+        class="group flex items-center gap-3 w-full min-h-20 p-3 text-left bg-bg-surface border border-border rounded-lg cursor-pointer select-none [-webkit-touch-callout:none] transition-[background-color,border-color] duration-150 hover:border-accent/50 hover:bg-bg-elevated active:bg-bg-hover"
+        v-on="longPress.listeners" @click.capture="onClick">
 
         <LocationGlyph :container="container" :own="counts.own" :child-count="childCount" :size="glyphSize" />
 
-        <div class="flex-1 min-w-0">
-            <div class="font-['Syne'] text-[15px] font-bold text-text-primary leading-tight truncate">
+        <div class="flex-1 min-w-0 flex flex-col gap-1">
+            <div class="font-name text-title-sm text-text-primary truncate">
                 <template v-if="query">
                     <span v-for="(part, i) in highlightParts(location.name, query)" :key="i"
-                        :class="part.match ? 'text-accent bg-accent-dim rounded-sm px-px' : ''">{{ part.text }}</span>
+                        :class="part.match ? 'text-accent-text bg-accent-dim rounded-[3px]' : ''">{{ part.text }}</span>
                 </template>
                 <template v-else>{{ location.name }}</template>
             </div>
 
-            <div class="flex items-center flex-wrap gap-x-2 gap-y-0.5 mt-1 text-[11px] text-text-muted">
-                <span v-if="container" class="inline-flex items-center gap-1 text-accent">
-                    <IconLayoutGrid :size="11" />
+            <div class="flex items-center flex-wrap gap-x-2 gap-y-0.5 text-caption text-text-muted tabular-nums">
+                <span v-if="container" class="inline-flex items-center gap-1 text-accent-text">
+                    <LayoutGrid :size="12" />
                     {{ zoneCount(zones) }}
                 </span>
                 <span v-else-if="childCount">{{ subLocationCount(childCount) }}</span>
                 <span v-if="counts.total">{{ itemCount(counts.total) }}</span>
-                <span v-else class="italic">leer</span>
-                <span v-if="showPath && parentPath" class="w-full truncate text-text-muted/70">{{ parentPath }}</span>
+                <span v-else>leer</span>
             </div>
+            <div v-if="showPath && parentPath" class="text-meta text-text-muted truncate">{{ parentPath }}</div>
         </div>
 
-        <IconChevronRight :size="18"
-            class="shrink-0 text-text-muted transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-accent" />
+        <ChevronRight :size="20"
+            class="shrink-0 text-text-muted transition-transform duration-150 group-hover:translate-x-0.5" />
     </NuxtLink>
 </template>
 
 <script setup lang="ts">
+import { ChevronRight, LayoutGrid } from "lucide-vue-next"
 import type { Location } from "~/types"
 import { highlightParts } from "~/utils/highlight"
 import { collectLeaves } from "~/repositories/containerRepository"
@@ -52,9 +54,21 @@ const props = withDefaults(defineProps<{
     showPath?: boolean
     /** Edge length of the plan thumbnail — big enough that splits stay readable. */
     glyphSize?: number
-}>(), { showPath: false, glyphSize: 60 })
+}>(), { showPath: false, glyphSize: 56 })
+
+const emit = defineEmits<{ longpress: [] }>()
 
 const { containerOf, countsOf, childrenOf, ancestorsOf } = useTopology()
+
+const longPress = useLongPress(() => emit("longpress"))
+
+/** Capture phase, so the router never sees the click that ends a long press. */
+function onClick(e: MouseEvent) {
+    if (longPress.consumeClick()) {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+}
 
 const container = computed(() => containerOf(props.location.id))
 const counts = computed(() => countsOf(props.location.id))

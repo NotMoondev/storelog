@@ -2,106 +2,237 @@
 
 @custom-variant dark (&:is([data-theme="dark"] *), :root:not([data-theme]) &);
 
-@theme {
-    --color-bg: #18181b;
-    --color-bg-surface: #232329;
-    --color-bg-elevated: #2e2e36;
-    --color-bg-hover: #3a3a44;
-    --color-border: #3a3a44;
-    --color-border-subtle: #28282f;
-    --color-accent: #4ade80;
-    --color-accent-dim: rgba(74, 222, 128, 0.14);
-    --color-accent-glow: rgba(74, 222, 128, 0.07);
-    --color-text-primary: #f4f4f5;
-    --color-text-secondary: #c4c4cc;
-    --color-text-muted: #8888a0;
-    --color-danger: #f87171;
-    --color-danger-dim: rgba(248, 113, 113, 0.14);
+/*
+ * Storelog design tokens. The values live once, as CSS variables on :root
+ * (dark, the default) and on the two light selectors below; Tailwind's theme
+ * only points at them, so `bg-bg-surface`, `text-accent-text` and friends
+ * switch with the theme without a second copy of every colour.
+ */
+
+/* ── Font ─────────────────────────────────────────────────── */
+/* Archivo, self-hosted so the PWA keeps its type offline. One variable file
+   carries width (62–125%) and weight (400–800). */
+@font-face {
+    font-family: "Archivo";
+    font-style: normal;
+    font-weight: 400 800;
+    font-stretch: 62% 125%;
+    font-display: swap;
+    src: url("/fonts/archivo-latin-ext.woff2") format("woff2");
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+    font-family: "Archivo";
+    font-style: normal;
+    font-weight: 400 800;
+    font-stretch: 62% 125%;
+    font-display: swap;
+    src: url("/fonts/archivo-latin.woff2") format("woff2");
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* ── Dark (default) ───────────────────────────────────────── */
 :root {
-    --bg: #18181b;
-    --bg-surface: #232329;
-    --bg-elevated: #2e2e36;
-    --bg-hover: #3a3a44;
-    --border: #3a3a44;
-    --border-subtle: #28282f;
-    --accent: #4ade80;
-    --accent-dim: rgba(74, 222, 128, 0.14);
-    --accent-glow: rgba(74, 222, 128, 0.07);
-    --text-primary: #f4f4f5;
-    --text-secondary: #c4c4cc;
-    --text-muted: #8888a0;
-    --danger: #f87171;
-    --danger-dim: rgba(248, 113, 113, 0.14);
+    --bg: #1a1a1a;
+    --bg-surface: #222222;
+    --bg-elevated: #2b2b2b;
+    --bg-hover: #363636;
+    /* The chosen segment sits above its track: lighter in dark, white in light. */
+    --bg-selected: #3d3d3d;
+    --border: #363636;
+    --border-subtle: #292929;
+    --border-strong: #7a7a7a;
+    --accent: #6fca8a;
+    --accent-dim: rgba(111, 202, 138, 0.14);
+    --accent-glow: rgba(111, 202, 138, 0.07);
+    --accent-text: #6fca8a;
+    --on-accent: #111111;
+    --text-primary: #e5e5e5;
+    --text-secondary: #bdbdbd;
+    --text-muted: #999999;
+    --danger: #ee8686;
+    --danger-dim: rgba(238, 134, 134, 0.14);
+    --on-danger: #111111;
+    --scrim: rgba(0, 0, 0, 0.72);
+
+    --shadow-float: 0 4px 24px #00000066;
+    --shadow-sheet: 0 -8px 40px #00000080;
+    --focus-ring: 0 0 0 2px #1a1a1a, 0 0 0 4px #6fca8a;
+
+    --width-display: 87.5%;
+    --width-text: 100%;
+    --width-wordmark: 125%;
+
+    --tap-min: 44px;
+    --control-sm: 36px;
+    --control-md: 44px;
+    --control-lg: 52px;
+    --row-min: 64px;
+    --nav-height: 64px;
+
+    --z-chrome: 40;
+    --z-sheet: 100;
+    --z-sheet-nested: 110;
+    --z-toast: 200;
+
+    color-scheme: dark;
 }
 
-/* ── Light overrides ──────────────────────────────────────── */
+/* ── Light ────────────────────────────────────────────────── */
 html[data-theme="light"] {
-    --bg: #fafafa;
-    --bg-surface: #ffffff;
-    --bg-elevated: #f4f4f5;
-    --bg-hover: #e4e4e7;
-    --border: #d4d4d8;
-    --border-subtle: #e4e4e7;
-    --accent: #16a34a;
-    --accent-dim: rgba(22, 163, 74, 0.10);
-    --accent-glow: rgba(22, 163, 74, 0.05);
-    --text-primary: #18181b;
-    --text-secondary: #3f3f46;
-    --text-muted: #71717a;
-    --danger: #dc2626;
-    --danger-dim: rgba(220, 38, 38, 0.10);
+    --bg: #f2f2f2;
+    --bg-surface: #fafafa;
+    --bg-elevated: #e8e8e8;
+    --bg-hover: #dedede;
+    --bg-selected: #ffffff;
+    --border: #d6d6d6;
+    --border-subtle: #e8e8e8;
+    --border-strong: #858585;
+    --accent: #2f7d46;
+    --accent-dim: rgba(47, 125, 70, 0.10);
+    --accent-glow: rgba(47, 125, 70, 0.05);
+    --accent-text: #2a6f3f;
+    --on-accent: #ffffff;
+    --text-primary: #1f1f1f;
+    --text-secondary: #474747;
+    --text-muted: #666666;
+    --danger: #b4352f;
+    --danger-dim: rgba(180, 53, 47, 0.08);
+    --on-danger: #ffffff;
+    --scrim: rgba(26, 26, 26, 0.48);
 
-    /* Tailwind color tokens */
-    --color-bg: #fafafa;
-    --color-bg-surface: #ffffff;
-    --color-bg-elevated: #f4f4f5;
-    --color-bg-hover: #e4e4e7;
-    --color-border: #d4d4d8;
-    --color-border-subtle: #e4e4e7;
-    --color-accent: #16a34a;
-    --color-accent-dim: rgba(22, 163, 74, 0.10);
-    --color-accent-glow: rgba(22, 163, 74, 0.05);
-    --color-text-primary: #18181b;
-    --color-text-secondary: #3f3f46;
-    --color-text-muted: #71717a;
-    --color-danger: #dc2626;
-    --color-danger-dim: rgba(220, 38, 38, 0.10);
+    --shadow-float: 0 4px 24px #1a1a1a1f;
+    --shadow-sheet: 0 -8px 40px #1a1a1a26;
+    --focus-ring: 0 0 0 2px #f2f2f2, 0 0 0 4px #2f7d46;
+
+    color-scheme: light;
 }
 
 @media (prefers-color-scheme: light) {
     html[data-theme="system"] {
-        --bg: #fafafa;
-        --bg-surface: #ffffff;
-        --bg-elevated: #f4f4f5;
-        --bg-hover: #e4e4e7;
-        --border: #d4d4d8;
-        --border-subtle: #e4e4e7;
-        --accent: #16a34a;
-        --accent-dim: rgba(22, 163, 74, 0.10);
-        --accent-glow: rgba(22, 163, 74, 0.05);
-        --text-primary: #18181b;
-        --text-secondary: #3f3f46;
-        --text-muted: #71717a;
-        --danger: #dc2626;
-        --danger-dim: rgba(220, 38, 38, 0.10);
+        --bg: #f2f2f2;
+        --bg-surface: #fafafa;
+        --bg-elevated: #e8e8e8;
+        --bg-hover: #dedede;
+        --border: #d6d6d6;
+        --border-subtle: #e8e8e8;
+        --border-strong: #858585;
+        --accent: #2f7d46;
+        --accent-dim: rgba(47, 125, 70, 0.10);
+        --accent-glow: rgba(47, 125, 70, 0.05);
+        --accent-text: #2a6f3f;
+        --on-accent: #ffffff;
+        --text-primary: #1f1f1f;
+        --text-secondary: #474747;
+        --text-muted: #666666;
+        --danger: #b4352f;
+        --danger-dim: rgba(180, 53, 47, 0.08);
+        --on-danger: #ffffff;
+        --scrim: rgba(26, 26, 26, 0.48);
 
-        --color-bg: #fafafa;
-        --color-bg-surface: #ffffff;
-        --color-bg-elevated: #f4f4f5;
-        --color-bg-hover: #e4e4e7;
-        --color-border: #d4d4d8;
-        --color-border-subtle: #e4e4e7;
-        --color-accent: #16a34a;
-        --color-accent-dim: rgba(22, 163, 74, 0.10);
-        --color-accent-glow: rgba(22, 163, 74, 0.05);
-        --color-text-primary: #18181b;
-        --color-text-secondary: #3f3f46;
-        --color-text-muted: #71717a;
-        --color-danger: #dc2626;
-        --color-danger-dim: rgba(220, 38, 38, 0.10);
+        --shadow-float: 0 4px 24px #1a1a1a1f;
+        --shadow-sheet: 0 -8px 40px #1a1a1a26;
+        --focus-ring: 0 0 0 2px #f2f2f2, 0 0 0 4px #2f7d46;
+
+        color-scheme: light;
+    }
+}
+
+/* ── Tailwind theme: names only, values come from the variables above ── */
+@theme inline {
+    --color-bg: var(--bg);
+    --color-bg-surface: var(--bg-surface);
+    --color-bg-elevated: var(--bg-elevated);
+    --color-bg-hover: var(--bg-hover);
+    --color-bg-selected: var(--bg-selected);
+    --color-border: var(--border);
+    --color-border-subtle: var(--border-subtle);
+    --color-border-strong: var(--border-strong);
+    --color-accent: var(--accent);
+    --color-accent-dim: var(--accent-dim);
+    --color-accent-glow: var(--accent-glow);
+    --color-accent-text: var(--accent-text);
+    --color-on-accent: var(--on-accent);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
+    --color-text-muted: var(--text-muted);
+    --color-danger: var(--danger);
+    --color-danger-dim: var(--danger-dim);
+    --color-on-danger: var(--on-danger);
+    --color-scrim: var(--scrim);
+
+    --shadow-float: var(--shadow-float);
+    --shadow-sheet: var(--shadow-sheet);
+}
+
+@theme {
+    --font-sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+
+    /* Type scale. Nothing below 12px; inputs are 16px so iOS never zooms. */
+    --text-caption: 12px;
+    --text-caption--line-height: 16px;
+    --text-meta: 14px;
+    --text-meta--line-height: 20px;
+    --text-label: 15px;
+    --text-label--line-height: 20px;
+    --text-body: 16px;
+    --text-body--line-height: 24px;
+    --text-title-sm: 17px;
+    --text-title-sm--line-height: 22px;
+    --text-title-md: 20px;
+    --text-title-md--line-height: 24px;
+    --text-title-lg: 26px;
+    --text-title-lg--line-height: 30px;
+    --text-title-xl: 30px;
+    --text-title-xl--line-height: 34px;
+
+    /* Four radii instead of seven. */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+}
+
+/* Names (titles, items, places) are Archivo Semi Condensed. */
+@utility font-name {
+    font-family: var(--font-display);
+    font-stretch: var(--width-display);
+    font-weight: 700;
+}
+
+/* The wordmark is the only expanded setting. */
+@utility font-wordmark {
+    font-family: var(--font-display);
+    font-stretch: var(--width-wordmark);
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* Section headings in lists and field labels. */
+@utility eyebrow {
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+/* Anything tappable that looks smaller than 44px gets the full hit area. */
+@utility tap-area {
+    position: relative;
+
+    &::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: max(100%, var(--tap-min));
+        height: max(100%, var(--tap-min));
+        transform: translate(-50%, -50%);
     }
 }
 
@@ -114,12 +245,13 @@ html,
 body {
     background: var(--bg);
     color: var(--text-primary);
-    font-family: "Inter", system-ui, sans-serif;
+    font-family: var(--font-sans);
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.5;
     height: 100%;
     overflow: hidden;
     overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
 }
 
 #__nuxt {
@@ -128,11 +260,10 @@ body {
     flex-direction: column;
 }
 
-h1,
-h2,
-h3,
-.font-display {
-    font-family: "Syne", sans-serif;
+/* Text fields show focus through their own border and glow instead. */
+:where(button, a, [role="button"], [role="radio"]):focus-visible {
+    outline: 2px solid transparent;
+    box-shadow: var(--focus-ring);
 }
 
 /* Scrollbar */
@@ -153,7 +284,16 @@ h3,
     background: var(--text-muted);
 }
 
-/* Animations */
+/* Horizontal rows (chips, breadcrumbs) scroll without a bar. */
+.no-scrollbar {
+    scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* ── Motion ───────────────────────────────────────────────── */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -168,25 +308,11 @@ h3,
 
 @keyframes slideUp {
     from {
-        opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(100%);
     }
 
     to {
-        opacity: 1;
         transform: translateY(0);
-    }
-}
-
-@keyframes pulse-accent {
-
-    0%,
-    100% {
-        box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.3);
-    }
-
-    50% {
-        box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
     }
 }
 
@@ -198,27 +324,16 @@ h3,
     animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Staggered list items */
-.stagger-item:nth-child(1) {
-    animation-delay: 0ms;
-}
+@media (prefers-reduced-motion: reduce) {
 
-.stagger-item:nth-child(2) {
-    animation-delay: 30ms;
-}
+    .animate-fade-in,
+    .animate-slide-up {
+        animation: none;
+    }
 
-.stagger-item:nth-child(3) {
-    animation-delay: 60ms;
-}
-
-.stagger-item:nth-child(4) {
-    animation-delay: 90ms;
-}
-
-.stagger-item:nth-child(5) {
-    animation-delay: 120ms;
-}
-
-.stagger-item:nth-child(n + 6) {
-    animation-delay: 150ms;
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0s !important;
+    }
 }

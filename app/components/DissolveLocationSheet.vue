@@ -1,203 +1,170 @@
 <template>
-    <UiSheet size="lg" max-height="92dvh" @close="$emit('close')">
-        <template #header>
-            <div class="flex-1 min-w-0">
-                <h2 class="font-['Syne'] text-[18px] font-bold text-text-primary leading-tight truncate">
-                    „{{ location.name }}" auflösen
-                </h2>
-                <p class="text-[11.5px] text-text-muted mt-0.5">
-                    Der Ort verschwindet. Entscheide, wohin sein Inhalt geht.
-                </p>
-            </div>
-        </template>
+    <UiSheet size="lg" max-height="92dvh" :title="`„${location.name}“ auflösen`"
+        subtitle="Der Ort verschwindet. Entscheide, wohin sein Inhalt geht." @close="$emit('close')">
 
-        <div v-if="loading" class="px-5 py-12 text-center text-[13px] text-text-muted">Wird geprüft…</div>
+        <div v-if="loading" class="px-5 py-12 text-center text-meta text-text-muted">Wird geprüft…</div>
 
-        <div v-else-if="loadError" class="px-5 py-10 text-center flex flex-col items-center gap-3">
-            <IconTriangleAlert :size="34" class="text-danger" />
-            <p class="text-[13.5px] text-text-secondary">{{ loadError }}</p>
+        <div v-else-if="loadError" class="px-5 py-10 flex flex-col items-center gap-3 text-center">
+            <IconTriangleAlert :size="40" class="text-danger" />
+            <p class="text-body text-text-secondary">{{ loadError }}</p>
         </div>
 
-        <div v-else-if="impact" class="px-4 py-4 flex flex-col gap-5">
+        <div v-else-if="impact" class="px-4 pt-1 pb-4 flex flex-col gap-6">
 
-            <!-- Default destination: set once, every "verschieben" row follows it -->
-            <div class="flex items-center gap-3 bg-bg-elevated border rounded-xl px-3.5 py-3 transition-colors"
-                :class="needsDefaultTarget ? 'border-danger/60' : 'border-border'">
+            <!-- Default destination: set once, every "Verschieben" row follows it -->
+            <div class="flex items-center gap-3 rounded-md bg-bg-elevated border px-4 py-3"
+                :class="needsDefaultTarget ? 'border-danger' : 'border-border'">
                 <div class="min-w-0 flex-1">
-                    <p class="text-[11px] text-text-secondary tracking-[0.08em] uppercase">Standardziel</p>
-                    <p class="text-[12px] mt-0.5 leading-snug"
-                        :class="needsDefaultTarget ? 'text-danger' : 'text-text-muted'">
+                    <p class="eyebrow">Standardziel</p>
+                    <p class="text-meta mt-0.5" :class="needsDefaultTarget ? 'text-danger' : 'text-text-muted'">
                         {{ needsDefaultTarget
-                            ? 'Wird gebraucht — dieser Ort hat keinen übergeordneten Ort.'
-                            : 'Gilt für alles, was du auf „Verschieben" stellst.' }}
+                            ? 'Wird gebraucht: dieser Ort hat keinen übergeordneten Ort.'
+                            : 'Gilt für alles, was du auf „Verschieben“ stellst.' }}
                     </p>
                 </div>
-                <button type="button" @click="openPicker('default')"
-                    class="shrink-0 max-w-[46%] flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] cursor-pointer transition-all border"
-                    :class="defaultTargetId
-                        ? 'bg-accent-dim border-accent text-accent'
-                        : needsDefaultTarget
-                            ? 'bg-danger-dim border-danger text-danger'
-                            : 'bg-bg-surface border-border text-text-muted hover:border-text-muted'">
-                    <IconCornerUpRight :size="13" class="shrink-0" />
-                    <span class="truncate">{{ defaultTargetName ?? 'Wählen…' }}</span>
-                </button>
+                <UiChip class="max-w-[46%]" :pressed="!!defaultTargetId" @click="openPicker('default')">
+                    <IconCornerUpRight :size="16" class="shrink-0" />
+                    <span class="truncate">{{ defaultTargetName ?? 'Ziel wählen' }}</span>
+                </UiChip>
             </div>
 
             <!-- Sub-locations -->
             <section v-if="impact.children.length" class="flex flex-col gap-2">
-                <div class="flex items-baseline gap-2 px-0.5">
-                    <h3 class="text-[11px] text-text-secondary/80 tracking-[0.12em] uppercase">Unterorte</h3>
-                    <span class="text-[11px] text-text-muted tabular-nums">{{ impact.children.length }}</span>
-                    <button type="button" @click="setAllChildren('promote')"
-                        class="ml-auto text-[11px] text-text-muted hover:text-text-primary bg-transparent border-none cursor-pointer transition-colors">
-                        alle hochstufen
+                <div class="flex items-center gap-2 px-1 min-h-11">
+                    <h3 class="eyebrow">Unterorte <span class="text-text-muted tracking-normal tabular-nums">{{ impact.children.length }}</span></h3>
+                    <button type="button" class="tap-area ml-auto text-meta font-medium text-accent-text cursor-pointer"
+                        @click="setAllChildren('promote')">
+                        Alle hochstufen
                     </button>
                 </div>
 
-                <div v-for="child in impact.children" :key="child.id"
-                    class="rounded-xl border transition-colors" :class="rowTone(childPlans[child.id]!.action)">
-                    <div class="flex items-start gap-2.5 px-3 pt-3 pb-2">
-                        <IconLayoutGrid v-if="child.isContainer" :size="15" class="text-text-muted shrink-0 mt-0.5" />
-                        <IconMapPin v-else :size="15" class="text-text-muted shrink-0 mt-0.5" />
+                <div v-for="child in impact.children" :key="child.id" class="rounded-md border p-3 flex flex-col gap-3"
+                    :class="rowTone(childPlans[child.id]!.action)">
+                    <div class="flex items-start gap-3">
+                        <IconLayoutGrid v-if="child.isContainer" :size="18" class="text-text-muted shrink-0 mt-0.5" />
+                        <IconMapPin v-else :size="18" class="text-text-muted shrink-0 mt-0.5" />
                         <div class="min-w-0 flex-1">
-                            <p class="text-[13.5px] font-medium text-text-primary truncate">{{ child.name }}</p>
-                            <p class="text-[11px] text-text-muted">
+                            <p class="font-name text-title-sm text-text-primary truncate">{{ child.name }}</p>
+                            <p class="text-caption text-text-muted tabular-nums">
                                 <span v-if="child.descendantLocations">{{ subLocationCount(child.descendantLocations) }} · </span>
                                 {{ itemCount(child.descendantItems) }}
                             </p>
                         </div>
                     </div>
 
-                    <div class="px-3 pb-3 flex flex-col gap-2">
-                        <div class="flex gap-1 bg-bg-elevated rounded-lg p-0.5">
-                            <button v-for="opt in childOptions" :key="opt.value" type="button"
-                                :aria-pressed="childPlans[child.id]!.action === opt.value"
-                                @click="childPlans[child.id]!.action = opt.value"
-                                class="flex-1 rounded-md py-1.5 text-[11.5px] cursor-pointer border-none transition-colors"
-                                :class="segClass(childPlans[child.id]!.action === opt.value, opt.value)">
-                                {{ opt.label }}
-                            </button>
-                        </div>
+                    <UiSegmented v-model="childPlans[child.id]!.action" :options="childOptions"
+                        :label="`${child.name}: was passiert`" />
 
-                        <p class="text-[11px] leading-snug flex items-center gap-1.5"
-                            :class="childPlans[child.id]!.action === 'delete' ? 'text-danger' : 'text-text-muted'">
-                            <template v-if="childPlans[child.id]!.action === 'promote'">
-                                <IconCornerUpLeft :size="11" class="shrink-0" />
-                                <span>{{ impact.parentName ? `rückt hoch nach „${impact.parentName}"` : 'wird selbst zum Hauptort' }}</span>
-                            </template>
-                            <template v-else-if="childPlans[child.id]!.action === 'move'">
-                                <IconCornerUpRight :size="11" class="shrink-0" />
-                                <button type="button" @click="openPicker('child', child.id)"
-                                    class="bg-transparent border-none p-0 cursor-pointer underline decoration-dotted underline-offset-2 transition-colors"
-                                    :class="effectiveTarget(childPlans[child.id]!) ? 'text-accent' : 'text-danger'">
-                                    {{ targetLabel(childPlans[child.id]!) }}
-                                </button>
-                                <span>· mit allem darin</span>
-                            </template>
-                            <template v-else>
-                                <IconTrash2 :size="11" class="shrink-0" />
-                                <span>
-                                    löscht {{ locationCount(child.descendantLocations + 1) }}
-                                    und {{ itemCount(child.descendantItems) }}
-                                </span>
-                            </template>
-                        </p>
-                    </div>
+                    <p class="text-meta flex items-center gap-1.5"
+                        :class="childPlans[child.id]!.action === 'delete' ? 'text-danger' : 'text-text-muted'">
+                        <template v-if="childPlans[child.id]!.action === 'promote'">
+                            <IconCornerUpLeft :size="14" class="shrink-0" />
+                            <span>{{ impact.parentName ? `rückt hoch nach „${impact.parentName}“` : 'wird selbst zum Hauptort' }}</span>
+                        </template>
+                        <template v-else-if="childPlans[child.id]!.action === 'move'">
+                            <IconCornerUpRight :size="14" class="shrink-0" />
+                            <button type="button" class="tap-area underline decoration-dotted underline-offset-2 cursor-pointer"
+                                :class="effectiveTarget(childPlans[child.id]!) ? 'text-accent-text' : 'text-danger'"
+                                @click="openPicker('child', child.id)">
+                                {{ targetLabel(childPlans[child.id]!) }}
+                            </button>
+                            <span>· mit allem darin</span>
+                        </template>
+                        <template v-else>
+                            <IconTrash2 :size="14" class="shrink-0" />
+                            <span>
+                                löscht {{ locationCount(child.descendantLocations + 1) }}
+                                und {{ itemCount(child.descendantItems) }}
+                            </span>
+                        </template>
+                    </p>
                 </div>
             </section>
 
             <!-- Items that lose their home -->
             <section v-if="impact.items.length" class="flex flex-col gap-2">
-                <div class="flex items-baseline gap-2 px-0.5">
-                    <h3 class="text-[11px] text-text-secondary/80 tracking-[0.12em] uppercase">Gegenstände</h3>
-                    <span class="text-[11px] text-text-muted tabular-nums">{{ impact.items.length }}</span>
-                    <div class="ml-auto flex items-center gap-2">
-                        <button type="button" @click="setAllItems('move')"
-                            class="text-[11px] text-text-muted hover:text-accent bg-transparent border-none cursor-pointer transition-colors">
-                            alle verschieben
+                <div class="flex items-center gap-2 px-1 min-h-11">
+                    <h3 class="eyebrow">Gegenstände <span class="text-text-muted tracking-normal tabular-nums">{{ impact.items.length }}</span></h3>
+                    <div class="ml-auto flex items-center gap-4">
+                        <button type="button" class="tap-area text-meta font-medium text-accent-text cursor-pointer"
+                            @click="setAllItems('move')">
+                            Alle verschieben
                         </button>
-                        <button type="button" @click="setAllItems('delete')"
-                            class="text-[11px] text-text-muted hover:text-danger bg-transparent border-none cursor-pointer transition-colors">
-                            alle löschen
+                        <button type="button" class="tap-area text-meta font-medium text-danger cursor-pointer"
+                            @click="setAllItems('delete')">
+                            Alle löschen
                         </button>
                     </div>
                 </div>
-                <p class="text-[11px] text-text-muted px-0.5 -mt-1">
-                    Sie können nicht bleiben — ihr Ort verschwindet.
-                </p>
+                <p class="text-meta text-text-muted px-1 -mt-1">Sie können nicht bleiben, ihr Ort verschwindet.</p>
 
                 <div v-for="item in impact.items" :key="item.id"
-                    class="flex items-center gap-2.5 rounded-xl border px-3 py-2.5 transition-colors"
+                    class="flex items-center gap-3 rounded-md border pl-3 pr-1.5 py-2 min-h-16"
                     :class="rowTone(itemPlans[item.id]!.action)">
                     <div class="min-w-0 flex-1">
-                        <p class="text-[13px] text-text-primary truncate">
-                            {{ item.name }}
-                            <span v-if="item.note" class="text-text-muted italic">· {{ item.note }}</span>
-                        </p>
-                        <p class="text-[10.5px] truncate"
+                        <p class="font-name text-title-sm text-text-primary truncate">{{ item.name }}</p>
+                        <p class="text-meta truncate"
                             :class="itemPlans[item.id]!.action === 'delete' ? 'text-danger' : 'text-text-muted'">
                             <template v-if="itemPlans[item.id]!.action === 'delete'">wird gelöscht</template>
                             <template v-else>
-                                <span class="text-text-muted">→ </span>
-                                <button type="button" @click="openPicker('item', item.id)"
-                                    class="bg-transparent border-none p-0 cursor-pointer underline decoration-dotted underline-offset-2 transition-colors"
-                                    :class="effectiveTarget(itemPlans[item.id]!) ? 'text-accent' : 'text-danger'">
+                                nach
+                                <button type="button" class="underline decoration-dotted underline-offset-2 cursor-pointer"
+                                    :class="effectiveTarget(itemPlans[item.id]!) ? 'text-accent-text' : 'text-danger'"
+                                    @click="openPicker('item', item.id)">
                                     {{ targetLabel(itemPlans[item.id]!) }}
                                 </button>
                             </template>
-                            <span v-if="item.zoneName" class="text-text-muted"> · aus {{ item.zoneName }}</span>
+                            <span v-if="item.zoneName"> · aus {{ item.zoneName }}</span>
                         </p>
                     </div>
 
-                    <div class="flex gap-1 bg-bg-elevated rounded-lg p-0.5 shrink-0">
-                        <button v-for="opt in itemOptions" :key="opt.value" type="button"
-                            :aria-pressed="itemPlans[item.id]!.action === opt.value"
-                            :aria-label="`${item.name}: ${opt.label}`"
-                            @click="itemPlans[item.id]!.action = opt.value"
-                            class="w-9 h-7 flex items-center justify-center rounded-md cursor-pointer border-none transition-colors"
-                            :class="segClass(itemPlans[item.id]!.action === opt.value, opt.value)">
-                            <component :is="opt.icon" :size="13" />
+                    <div role="radiogroup" :aria-label="`${item.name}: was passiert`"
+                        class="flex gap-1 p-1 rounded-md bg-bg-elevated border border-border shrink-0">
+                        <button v-for="opt in itemOptions" :key="opt.value" type="button" role="radio"
+                            :aria-checked="itemPlans[item.id]!.action === opt.value" :aria-label="opt.label"
+                            :title="opt.label"
+                            class="size-10 flex items-center justify-center rounded-sm cursor-pointer transition-colors"
+                            :class="segClass(itemPlans[item.id]!.action === opt.value, opt.value)"
+                            @click="itemPlans[item.id]!.action = opt.value">
+                            <component :is="opt.icon" :size="18" />
                         </button>
                     </div>
                 </div>
             </section>
 
-            <p v-if="!impact.children.length && !impact.items.length"
-                class="text-[13px] text-text-muted text-center py-6">
-                Der Ort ist leer — er wird einfach entfernt.
+            <p v-if="!impact.children.length && !impact.items.length" class="text-meta text-text-muted text-center py-6">
+                Der Ort ist leer und wird einfach entfernt.
             </p>
         </div>
 
         <template #footer>
             <div class="flex flex-col gap-3">
-                <div v-if="impact" class="flex flex-col gap-1 text-[11.5px]">
+                <div v-if="impact" class="flex flex-col gap-1 text-meta">
                     <p v-for="line in summaryLines" :key="line.text"
                         :class="line.tone === 'danger' ? 'text-danger' : 'text-text-secondary'">
                         {{ line.text }}
                     </p>
                 </div>
 
-                <p v-if="blocker || submitError" class="text-[11.5px] text-danger flex items-start gap-1.5">
-                    <IconTriangleAlert :size="13" class="shrink-0 mt-0.5" />
+                <p v-if="blocker || submitError" class="text-meta text-danger flex items-start gap-1.5">
+                    <IconTriangleAlert :size="16" class="shrink-0 mt-0.5" />
                     <span>{{ blocker || submitError }}</span>
                 </p>
 
-                <div class="flex gap-3">
-                    <button type="button" @click="$emit('close')"
-                        class="flex-1 py-3.5 rounded-xl text-[14px] cursor-pointer border transition-all bg-bg-elevated text-text-secondary border-border active:scale-[0.97] hover:text-text-primary">
-                        Abbrechen
-                    </button>
-                    <button type="button" :disabled="!!blocker || submitting || loading" @click="submit"
-                        class="flex-1 py-3.5 rounded-xl text-[14px] font-medium cursor-pointer border-none transition-all bg-danger text-black active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed">
-                        {{ submitting ? 'Wird aufgelöst…' : 'Auflösen' }}
-                    </button>
-                </div>
+                <!-- The one confirmation step left in Storelog: this cannot be undone. -->
+                <UiActionBar>
+                    <UiButton variant="danger-solid" :disabled="!!blocker || loading" :loading="submitting"
+                        @click="submit">
+                        {{ submitting ? 'Wird aufgelöst…' : `„${location.name}“ auflösen` }}
+                    </UiButton>
+                </UiActionBar>
             </div>
         </template>
 
-        <LocationPickerSheet :open="!!picker" :model-value="pickerCurrent" @update:model-value="onPick"
-            @close="picker = null" />
+        <template #after>
+            <LocationPickerSheet :open="!!picker" :model-value="pickerCurrent" title="Ziel wählen"
+                @update:model-value="onPick" @close="picker = null" />
+        </template>
     </UiSheet>
 </template>
 
@@ -316,15 +283,14 @@ function setAllItems(action: ItemAction) {
 
 function rowTone(action: ChildAction | ItemAction): string {
     if (action === "delete") return "bg-danger-dim border-danger/30"
-    if (action === "move") return "bg-bg-surface border-accent/30"
+    if (action === "move") return "bg-bg-surface border-accent/40"
     return "bg-bg-surface border-border-subtle"
 }
 
 function segClass(active: boolean, value: ChildAction | ItemAction): string {
-    if (!active) return "bg-transparent text-text-muted hover:text-text-secondary"
-    if (value === "delete") return "bg-danger text-black font-semibold"
-    if (value === "move") return "bg-accent text-black font-semibold"
-    return "bg-bg-hover text-text-primary font-semibold"
+    if (!active) return "text-text-muted hover:text-text-primary"
+    if (value === "delete") return "bg-danger text-on-danger"
+    return "bg-accent text-on-accent"
 }
 
 // ── Summary and validation ────────────────────────────────────────────────────
@@ -392,7 +358,7 @@ const blocker = computed(() => {
     const missing =
         impact.value.children.filter((c) => childPlans[c.id]?.action === "move" && !effectiveTarget(childPlans[c.id]!)).length +
         impact.value.items.filter((i) => itemPlans[i.id]?.action === "move" && !effectiveTarget(itemPlans[i.id]!)).length
-    if (missing) return `${missing} Zeile${missing !== 1 ? "n" : ""} ohne Zielort — oben ein Standardziel setzen.`
+    if (missing) return `${missing} Zeile${missing !== 1 ? "n" : ""} ohne Zielort. Setze oben ein Standardziel.`
     return ""
 })
 

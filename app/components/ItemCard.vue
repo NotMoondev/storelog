@@ -1,48 +1,50 @@
 <template>
+    <!-- ItemRow: tap opens the item, a long press starts selecting. -->
     <button type="button"
-        class="flex items-start gap-3 w-full text-left border rounded-xl px-3 py-2.5 transition-all duration-150 cursor-pointer"
+        class="flex items-center gap-3 w-full min-h-16 p-3 text-left border rounded-md cursor-pointer select-none [-webkit-touch-callout:none] transition-[background-color,border-color] duration-150"
         :class="selected
             ? 'bg-accent-dim border-accent'
-            : 'bg-bg-surface border-border-subtle hover:border-border hover:bg-bg-elevated'"
-        :aria-pressed="selectable ? selected : undefined" @click="$emit('activate')">
+            : 'bg-bg-surface border-border-subtle hover:bg-bg-elevated hover:border-border active:bg-bg-hover'"
+        :aria-pressed="selectable ? selected : undefined" v-on="longPress.listeners" @click="onClick">
 
-        <!-- Selection marker in move mode, otherwise the zone thumbnail -->
+        <!-- Checkbox while selecting, otherwise the compartment thumbnail -->
         <span v-if="selectable"
-            class="mt-0.5 w-5 h-5 rounded-md border shrink-0 flex items-center justify-center transition-colors"
-            :class="selected ? 'bg-accent border-accent text-black' : 'border-border text-transparent'">
-            <IconCheck :size="13" />
+            class="size-6 rounded-sm border-2 shrink-0 flex items-center justify-center transition-colors"
+            :class="selected ? 'bg-accent border-accent text-on-accent' : 'border-border-strong text-transparent'">
+            <Check :size="16" />
         </span>
         <ZoneMap v-else-if="showMap && item.container" :container="item.container"
-            :highlight-id="item.zoneLocationId" compact :size="40" class="mt-0.5" />
+            :highlight-id="item.zoneLocationId" compact :size="40" />
         <span v-else-if="showMap"
-            class="shrink-0 mt-0.5 w-10 h-10 rounded-md border border-border bg-bg-elevated flex items-center justify-center text-text-muted">
-            <IconBox :size="16" />
+            class="shrink-0 size-10 rounded-sm border border-border bg-bg-elevated flex items-center justify-center text-text-muted">
+            <Box :size="16" />
         </span>
 
-        <span class="flex-1 min-w-0">
-            <span class="block font-['Syne'] text-[14px] font-semibold text-text-primary leading-snug truncate">
+        <span class="flex-1 min-w-0 flex flex-col gap-0.5">
+            <span class="font-name text-title-sm text-text-primary truncate">
                 <template v-if="query">
                     <span v-for="(part, i) in highlightParts(item.name, query)" :key="i"
-                        :class="part.match ? 'text-accent bg-accent-dim rounded-sm px-px' : ''">{{ part.text }}</span>
+                        :class="part.match ? 'text-accent-text bg-accent-dim rounded-[3px]' : ''">{{ part.text }}</span>
                 </template>
                 <template v-else>{{ item.name }}</template>
             </span>
 
-            <span v-if="item.note" class="block text-[11.5px] text-text-muted italic truncate mt-0.5">{{ item.note }}</span>
+            <span v-if="item.note" class="text-meta text-text-muted truncate">{{ item.note }}</span>
 
-            <span v-if="showPath" class="flex items-center flex-wrap gap-x-1 mt-1">
-                <span v-for="(seg, i) in pathSegments" :key="i" class="text-[11px] text-accent flex items-center gap-1">
-                    <IconChevronRight v-if="i > 0" :size="9" class="text-text-muted" />
-                    {{ seg }}
-                </span>
+            <span v-if="showPath" class="flex items-center flex-wrap gap-x-1 text-meta text-text-secondary">
+                <template v-for="(seg, i) in pathSegments" :key="i">
+                    <ChevronRight v-if="i > 0" :size="12" class="text-text-muted" />
+                    <span :class="i === pathSegments.length - 1 ? 'font-medium text-accent-text' : ''">{{ seg }}</span>
+                </template>
             </span>
         </span>
 
-        <UserBadge v-if="showAuthor" :user-id="item.createdBy" :show-name="false" class="shrink-0 mt-0.5" />
+        <UserBadge v-if="showAuthor" :user-id="item.createdBy" :show-name="false" class="shrink-0" />
     </button>
 </template>
 
 <script setup lang="ts">
+import { Box, Check, ChevronRight } from "lucide-vue-next"
 import type { ItemView } from "~/types"
 import { highlightParts } from "~/utils/highlight"
 
@@ -64,7 +66,14 @@ const props = withDefaults(defineProps<{
     showAuthor: false,
 })
 
-defineEmits<{ activate: [] }>()
+const emit = defineEmits<{ activate: []; longpress: [] }>()
+
+const longPress = useLongPress(() => emit("longpress"))
+
+function onClick() {
+    if (longPress.consumeClick()) return
+    emit("activate")
+}
 
 /** Drop the leading room when the path is long, so the tail stays readable. */
 const pathSegments = computed(() => {

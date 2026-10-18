@@ -1,12 +1,11 @@
 <template>
-    <span class="inline-flex items-center gap-1.5 min-w-0 align-middle">
+    <span class="inline-flex items-center gap-2 min-w-0 align-middle">
         <span class="rounded-full flex items-center justify-center font-semibold shrink-0 border leading-none"
-            :class="size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-4.5 h-4.5 text-[8px]'" :style="avatarStyle"
-            :title="name">
+            :class="size === 'sm' ? 'size-8 text-caption' : 'size-6 text-caption'" :style="avatarStyle" :title="name">
             {{ initials }}
         </span>
-        <span v-if="showName" class="truncate"
-            :class="[size === 'sm' ? 'text-[13px]' : 'text-[11px]', mine ? 'text-text-secondary' : 'text-text-muted']">
+        <span v-if="showName" class="truncate text-meta"
+            :class="mine ? 'text-text-secondary' : 'text-text-muted'">
             {{ name }}<span v-if="mine" class="text-text-muted">&nbsp;(du)</span>
         </span>
     </span>
@@ -15,6 +14,7 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
     userId?: string | null
+    /** `xs` 24px for rows and bylines, `sm` 32px for headers and settings. */
     size?: 'xs' | 'sm'
     showName?: boolean
 }>(), { size: 'xs', showName: true })

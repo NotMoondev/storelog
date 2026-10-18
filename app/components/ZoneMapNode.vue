@@ -23,18 +23,14 @@
 
     <!-- Leaf zone -->
     <button v-else type="button" :disabled="!interactive || !node.locationId" :title="compact ? node.name : undefined"
-        class="w-full h-full flex flex-col items-center justify-center gap-0.5 border-none p-0 m-0 transition-colors"
-        :class="[leafClass, interactive && node.locationId ? 'cursor-pointer' : 'cursor-default']"
+        :aria-pressed="interactive ? isHighlighted : undefined"
+        class="w-full h-full flex items-start gap-1 border-none m-0 text-left overflow-hidden transition-colors"
+        :class="[leafClass, labels ? 'px-2 py-1' : 'p-0', interactive && node.locationId ? 'cursor-pointer' : 'cursor-default']"
         @click="node.locationId && $emit('select', node.locationId)">
+        <!-- Name and count share one line, so even a thin drawer reads -->
         <template v-if="labels">
-            <span class="text-[10px] leading-tight text-center px-1 max-w-full truncate" :class="labelClass">
-                {{ node.name }}
-            </span>
-            <span v-if="count"
-                class="text-[9px] leading-none rounded-full px-1.5 py-0.5 tabular-nums"
-                :class="isHighlighted ? 'bg-black/25 text-black' : 'bg-accent-dim text-accent'">
-                {{ count }}
-            </span>
+            <span class="flex-1 min-w-0 text-caption truncate" :class="labelClass">{{ node.name }}</span>
+            <span v-if="count" class="shrink-0 text-caption font-semibold tabular-nums" :class="countClass">{{ count }}</span>
         </template>
     </button>
 </template>
@@ -80,20 +76,18 @@ const isHighlighted = computed(() =>
     props.node.type === "leaf" && !!props.node.locationId && props.node.locationId === props.highlightId
 )
 
+/**
+ * Highlighted: tinted fill with a 2px accent ring (the compartment meant).
+ * Thumbnails keep a solid accent fill, which stays readable at 40px.
+ */
 const leafClass = computed(() => {
-    if (isHighlighted.value) return "bg-accent"
-    if (count.value > 0) {
-        return props.compact
-            ? "bg-accent/30"
-            : "bg-accent-dim hover:bg-accent/25"
+    if (isHighlighted.value) {
+        return props.compact ? "bg-accent" : "bg-accent-dim shadow-[inset_0_0_0_2px_var(--accent)]"
     }
-    return props.compact
-        ? "bg-bg-surface"
-        : "bg-bg-surface hover:bg-bg-elevated"
+    if (props.compact) return count.value > 0 ? "bg-accent/30" : "bg-bg-surface"
+    return "bg-bg-elevated hover:bg-bg-hover"
 })
 
-const labelClass = computed(() => {
-    if (isHighlighted.value) return "text-black font-semibold"
-    return count.value > 0 ? "text-accent" : "text-text-muted"
-})
+const labelClass = computed(() => (isHighlighted.value ? "text-accent-text font-semibold" : "text-text-secondary font-medium"))
+const countClass = computed(() => (isHighlighted.value ? "text-accent-text" : "text-text-muted"))
 </script>

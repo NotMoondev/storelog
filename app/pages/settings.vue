@@ -1,178 +1,128 @@
 <template>
     <div class="flex flex-col h-full">
+        <div class="flex-1 overflow-y-auto px-4 lg:px-8 pt-4 lg:pt-6 pb-10">
+            <div class="lg:max-w-2xl lg:mx-auto flex flex-col gap-8">
 
-        <!-- Toolbar -->
-        <div class="flex items-center px-4 py-3.5 border-b border-border-subtle shrink-0">
-            <h2 class="font-['Syne'] text-[20px] font-bold text-text-primary">Einstellungen</h2>
-        </div>
+                <h1 class="font-name text-title-lg lg:text-title-xl text-text-primary">Einstellungen</h1>
 
-        <!-- Body -->
-        <div class="flex-1 overflow-y-auto px-4 pt-5 pb-15 flex flex-col gap-7">
-
-            <!-- Section: Benutzer -->
-            <div class="flex flex-col gap-2">
-                <div class="text-[11px] text-text-muted tracking-widest uppercase px-1">Benutzer</div>
-
-                <div class="bg-bg-surface border border-border rounded-2xl p-4 space-y-4">
-                    <div>
-                        <div class="flex items-center gap-2.5 min-w-0">
+                <!-- Name -->
+                <section class="flex flex-col gap-2">
+                    <h2 class="eyebrow px-1">Name</h2>
+                    <div class="bg-bg-surface border border-border rounded-lg p-4 flex flex-col gap-4">
+                        <div class="flex items-center gap-3 min-w-0">
                             <UserBadge v-if="currentUser" :user-id="currentUser.id" :show-name="false" size="sm" />
-                            <h2 class="font-medium text-text-primary truncate">
+                            <p class="font-name text-title-sm text-text-primary truncate">
                                 {{ currentUser?.name ?? 'Kein Name gesetzt' }}
-                            </h2>
+                            </p>
                         </div>
-                        <p class="text-sm text-text-muted mt-2">
-                            Dein Name wird bei allem gespeichert, was du hinzufügst oder bearbeitest.
-                            Gib denselben Namen auf einem anderen Gerät ein, um dort als dieselbe
-                            Person weiterzuarbeiten.
+                        <p class="text-meta text-text-muted">
+                            Dein Name steht bei allem, was du anlegst oder änderst. Gib denselben Namen auf einem
+                            anderen Gerät ein, um dort als dieselbe Person weiterzuarbeiten.
                         </p>
-                    </div>
+                        <UiButton variant="secondary" :icon="Repeat2" block @click="switchUserOpen = true">
+                            Name ändern
+                        </UiButton>
 
-                    <button @click="switchUserOpen = true" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm
-                        bg-bg-elevated border border-border text-text-secondary
-                        cursor-pointer transition-all duration-150
-                        hover:bg-accent-dim hover:border-accent/40 hover:text-accent">
-                        <IconRepeat2 class="size-5" />
-                        Name ändern
-                    </button>
-
-                    <!-- Everyone who has used this log -->
-                    <div v-if="userStats.length" class="space-y-2 pt-1">
-                        <div class="text-[11px] text-text-muted tracking-widest uppercase">Alle Namen</div>
-                        <div v-for="user in userStats" :key="user.id"
-                            class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border"
-                            :class="user.id === currentUser?.id ? 'bg-accent-dim border-accent/40' : 'bg-bg-elevated border-border-subtle'">
-                            <UserBadge :user-id="user.id" :show-name="false" size="sm" />
-                            <span class="flex-1 min-w-0 truncate text-sm text-text-primary">{{ user.name }}</span>
-                            <span class="text-xs text-text-muted shrink-0 tabular-nums">
-                                {{ user.itemCount }} Gegenst{{ user.itemCount === 1 ? 'and' : 'ände' }}
-                                · {{ user.locationCount }} Ort{{ user.locationCount !== 1 ? 'e' : '' }}
-                            </span>
+                        <!-- Everyone who has used this log -->
+                        <div v-if="userStats.length" class="flex flex-col gap-2 pt-1">
+                            <h3 class="eyebrow">Alle Namen</h3>
+                            <div v-for="user in userStats" :key="user.id"
+                                class="flex items-center gap-3 min-h-14 px-3 rounded-md border"
+                                :class="user.id === currentUser?.id ? 'bg-accent-dim border-accent/40' : 'bg-bg-elevated border-border-subtle'">
+                                <UserBadge :user-id="user.id" :show-name="false" size="sm" />
+                                <span class="flex-1 min-w-0 truncate text-label text-text-primary">{{ user.name }}</span>
+                                <span class="text-caption text-text-muted shrink-0 tabular-nums">
+                                    {{ itemCountLabel(user.itemCount) }} · {{ locationCountLabel(user.locationCount) }}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </section>
 
-            <!-- Section: Theme -->
-            <div class="bg-bg-surface border border-border rounded-2xl p-4 space-y-3">
-                <div>
-                    <h2 class="font-medium text-text-primary">Design</h2>
-                    <p class="text-sm text-text-muted mt-1">Wähle zwischen hellem, dunklem oder systemseitigem Design.
-                    </p>
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <button v-for="opt in themeOptions" :key="opt.value" @click="setTheme(opt.value)" :class="[
-                        'flex flex-col items-center gap-1.5 rounded-xl py-3 text-xs transition-all duration-150 border cursor-pointer',
-                        theme === opt.value
-                            ? 'bg-accent-dim border-accent/60 text-accent'
-                            : 'bg-bg-elevated border-border text-text-secondary hover:bg-bg-hover hover:text-text-primary'
-                    ]">
-                        <IconMoon v-if="opt.icon === 'IconMoon'" class="size-4" />
-                        <IconSun v-else-if="opt.icon === 'IconSun'" class="size-4" />
-                        <IconMonitor v-else class="size-4" />
-                        {{ opt.label }}
-                    </button>
-                </div>
-            </div>
-
-            <!-- Section: Daten -->
-            <div class="flex flex-col gap-2">
-                <div class="text-[11px] text-text-muted tracking-widest uppercase px-1">Daten</div>
-
-                <div class="bg-bg-surface border border-border-subtle rounded-xl overflow-hidden p-4 space-y-4">
-                    <div>
-                        <h2 class="font-medium text-text-primary">Datensicherung</h2>
-                        <p class="text-sm text-text-muted mt-1">
-                            Exportiere alle deine Daten als JSON-Datei und importiere sie bei Bedarf wieder.
-                        </p>
+                <!-- Theme -->
+                <section class="flex flex-col gap-2">
+                    <h2 class="eyebrow px-1">Darstellung</h2>
+                    <div class="bg-bg-surface border border-border rounded-lg p-4 flex flex-col gap-3">
+                        <p class="text-meta text-text-muted">Hell, dunkel oder so wie dein Gerät.</p>
+                        <UiSegmented :model-value="theme" :options="themeOptions" label="Darstellung"
+                            @update:model-value="setTheme" />
                     </div>
+                </section>
 
-                    <div class="space-y-3">
-                        <!-- Export -->
-                        <button @click="handleExport" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm
-                    bg-bg-elevated border border-border text-text-secondary
-                    cursor-pointer transition-all duration-150
-                    hover:bg-accent-dim hover:border-accent/40 hover:text-accent
-                    disabled:opacity-40 disabled:cursor-not-allowed">
-                            <IconUpload class="size-5" />
+                <!-- Data -->
+                <section class="flex flex-col gap-2">
+                    <h2 class="eyebrow px-1">Datensicherung</h2>
+                    <div class="bg-bg-surface border border-border rounded-lg p-4 flex flex-col gap-3">
+                        <p class="text-meta text-text-muted">
+                            Exportiere alle Daten als JSON-Datei und importiere sie bei Bedarf wieder.
+                        </p>
+                        <UiButton variant="secondary" :icon="Upload" block :loading="exporting" @click="handleExport">
                             Daten exportieren
-                        </button>
+                        </UiButton>
 
-                        <!-- Import -->
-                        <button @click="handleImport" :disabled="importing" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm
-                    bg-bg-elevated border border-border text-text-secondary
-                    cursor-pointer transition-all duration-150
-                    hover:bg-accent-dim hover:border-accent/40 hover:text-accent
-                    disabled:opacity-40 disabled:cursor-not-allowed">
-                            <IconLoaderCircle v-if="importing" class="size-5 animate-spin" />
-                            <IconDownload v-else class="size-5" />
+                        <!-- Import replaces everything and cannot be undone: it asks here, on the page. -->
+                        <div v-if="pendingImport" role="alert"
+                            class="flex flex-col gap-3 p-3 rounded-md bg-danger-dim border border-danger/30">
+                            <p class="flex items-start gap-2 text-meta text-danger">
+                                <TriangleAlert :size="18" class="shrink-0" />
+                                <span>
+                                    „{{ pendingImport.name }}“ ersetzt alle {{ itemCountLabel(itemCount) }} und
+                                    {{ locationCountLabel(locationCount) }}. Das lässt sich nicht rückgängig machen.
+                                    Exportiere vorher, wenn du den jetzigen Stand behalten willst.
+                                </span>
+                            </p>
+                            <UiActionBar>
+                                <UiButton variant="ghost" @click="pendingImport = null">Abbrechen</UiButton>
+                                <UiButton variant="danger-solid" class="is-primary" :loading="importing"
+                                    @click="confirmImport">
+                                    Alles ersetzen
+                                </UiButton>
+                            </UiActionBar>
+                        </div>
+                        <UiButton v-else variant="secondary" :icon="Download" block :loading="importing"
+                            @click="startImport">
                             Daten importieren
-                        </button>
-
-                        <input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport" />
+                        </UiButton>
                     </div>
+                </section>
 
-                    <!-- Warning -->
-                    <div class="flex items-start gap-2 pt-1 text-amber-500">
-                        <IconAlertTriangle class="size-3.5 shrink-0 mt-0.5" />
-                        <p class="text-xs">
-                            Beim Importieren werden alle vorhandenen Daten unwiderruflich überschrieben.
-                            Mache vorher einen Export als Backup.
-                        </p>
-                    </div>
-                </div>
+                <!-- App -->
+                <section class="flex flex-col gap-2">
+                    <h2 class="eyebrow px-1">App</h2>
+                    <dl class="bg-bg-surface border border-border rounded-lg divide-y divide-border-subtle">
+                        <div class="flex items-center justify-between min-h-12 px-4">
+                            <dt class="text-meta text-text-secondary">Version</dt>
+                            <dd class="text-meta text-text-muted">{{ appVersion }}</dd>
+                        </div>
+                        <div class="flex items-center justify-between min-h-12 px-4">
+                            <dt class="text-meta text-text-secondary">Bestand</dt>
+                            <dd class="text-meta text-text-muted tabular-nums">
+                                {{ itemCountLabel(itemCount) }} · {{ locationCountLabel(locationCount) }}
+                            </dd>
+                        </div>
+                    </dl>
+                </section>
             </div>
-
-            <!-- Section: App -->
-            <div class="flex flex-col gap-2">
-                <div class="text-[11px] text-text-muted tracking-widest uppercase px-1">App</div>
-
-                <div class="bg-bg-surface border border-border-subtle rounded-xl overflow-hidden">
-                    <div class="flex items-center justify-between px-4 py-3.25">
-                        <span class="text-sm text-text-secondary">Version</span>
-                        <span class="text-sm text-text-muted">{{ appVersion }}</span>
-                    </div>
-                    <div class="h-px bg-border-subtle mx-4" />
-                    <div class="flex items-center justify-between px-4 py-3.25">
-                        <span class="text-sm text-text-secondary">Speicher</span>
-                        <span class="text-sm text-text-muted">
-                            {{ itemCount }} Gegenstände · {{ locationCount }} Orte
-                        </span>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
         <UserSetupSheet v-if="switchUserOpen" mode="switch" @close="switchUserOpen = false" />
-
-        <!-- Toast -->
-        <Transition enter-active-class="transition-[opacity,transform] duration-200 ease-out"
-            leave-active-class="transition-[opacity,transform] duration-200 ease-out"
-            enter-from-class="opacity-0 translate-y-2" leave-to-class="opacity-0 translate-y-2">
-            <div v-if="toast.visible" class="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4.5 py-2.75
-               rounded-[10px] text-[13px whitespace-nowrap z-200 pointer-events-none border" :class="toast.type === 'success'
-                ? 'bg-accent/12 border-accent/30 text-accent'
-                : 'bg-danger-dim border-danger/30 text-danger'">
-                <span class="text-base leading-none">
-                    <IconCheck v-if="toast.type === 'success'" />
-                    <IconX v-else />
-                </span>
-                {{ toast.message }}
-            </div>
-        </Transition>
-
     </div>
 </template>
 
 <script setup lang="ts">
+import { Download, Repeat2, TriangleAlert, Upload } from "lucide-vue-next"
+import { itemCount as itemCountLabel, locationCount as locationCountLabel } from "~/utils/plural"
+
 const { exportData, importData, pickFile, exporting, importing } = useDataTransfer()
 const { items, load: loadItems } = useItems()
 const { locations, load: loadLocations } = useLocations()
+const { load: loadContainers } = useContainers()
 const { theme, setTheme } = useTheme()
 const { currentUser, users, loadUsers } = useUser()
+const toast = useToast()
 
 const switchUserOpen = ref(false)
+const pendingImport = ref<File | null>(null)
 
 const itemCount = computed(() => items.value.length)
 const locationCount = computed(() => locations.value.length)
@@ -188,50 +138,39 @@ const userStats = computed(() =>
 
 const { public: { appVersion } } = useRuntimeConfig()
 
-const toast = reactive({
-    visible: false,
-    message: '',
-    type: 'success' as 'success' | 'error',
-})
-
-let toastTimer: ReturnType<typeof setTimeout> | null = null
-
-const themeOptions = [
-    { value: 'dark', label: 'Dunkel', icon: 'IconMoon' },
-    { value: 'light', label: 'Hell', icon: 'IconSun' },
-    { value: 'system', label: 'System', icon: 'IconMonitor' },
-] as const
-
-function showToast(message: string, type: 'success' | 'error') {
-    if (toastTimer) clearTimeout(toastTimer)
-    toast.message = message
-    toast.type = type
-    toast.visible = true
-    toastTimer = setTimeout(() => (toast.visible = false), 3000)
-}
-
+const themeOptions: { value: "dark" | "light" | "system"; label: string }[] = [
+    { value: "dark", label: "Dunkel" },
+    { value: "light", label: "Hell" },
+    { value: "system", label: "System" },
+]
 
 async function handleExport() {
     try {
         await exportData()
-        showToast('Daten erfolgreich exportiert.', 'success')
-    } catch {
-        showToast('Export fehlgeschlagen.', 'error')
+        toast.show({ message: "Daten exportiert" })
+    } catch (err) {
+        toast.error(err, "Export hat nicht geklappt.")
     }
 }
 
-async function handleImport() {
+async function startImport() {
     try {
-        const file = await pickFile()
-        const confirmed = confirm('Alle vorhandenen Daten werden überschrieben. Fortfahren?')
-        if (!confirmed) return
-        await importData(file)
-        await Promise.all([loadItems(), loadLocations(), loadUsers()])
-        showToast('Daten erfolgreich importiert.', 'success')
+        pendingImport.value = await pickFile()
     } catch (e) {
-        if (e instanceof Error && e.message !== 'Keine Datei ausgewählt.') {
-            showToast(e.message, 'error')
-        }
+        if (e instanceof Error && e.message !== "Keine Datei ausgewählt.") toast.error(e, "Datei konnte nicht gelesen werden.")
+    }
+}
+
+async function confirmImport() {
+    const file = pendingImport.value
+    if (!file) return
+    try {
+        await importData(file)
+        pendingImport.value = null
+        await Promise.all([loadItems(), loadLocations(), loadContainers(), loadUsers()])
+        toast.show({ message: "Daten importiert" })
+    } catch (err) {
+        toast.error(err, "Import hat nicht geklappt.")
     }
 }
 

@@ -53,8 +53,8 @@ export default defineNuxtConfig({
             name: "STORELOG",
             short_name: "STORELOG",
             description: "Finde jeden Gegenstand sofort.",
-            theme_color: "#0b0b0b",
-            background_color: "#0b0b0b",
+            theme_color: "#1a1a1a",
+            background_color: "#1a1a1a",
             display: "standalone",
             orientation: "portrait",
             icons: [
@@ -72,7 +72,7 @@ export default defineNuxtConfig({
         },
         workbox: {
             navigateFallback: "/",
-            globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
+            globPatterns: ["**/*.{js,css,html,png,svg,ico,woff2}"],
         },
         devOptions: {
             enabled: false,
@@ -91,25 +91,32 @@ export default defineNuxtConfig({
             title: "STORELOG",
             meta: [
                 { charset: "utf-8" },
-                { name: "viewport", content: "width=device-width, initial-scale=1" },
+                { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
                 { name: "description", content: "Finde jeden Gegenstand sofort." },
-                { name: "theme-color", content: "#0b0b0b" },
+                { name: "theme-color", content: "#1a1a1a" },
                 { name: "apple-mobile-web-app-capable", content: "yes" },
                 {
                     name: "apple-mobile-web-app-status-bar-style",
                     content: "black-translucent",
                 },
             ],
-            link: [
-                { rel: "preconnect", href: "https://fonts.googleapis.com" },
+            // Set the theme before the first paint, so a light-theme device
+            // never flashes the dark default while the app boots.
+            script: [
                 {
-                    rel: "preconnect",
-                    href: "https://fonts.gstatic.com",
-                    crossorigin: "",
+                    innerHTML: "try{document.documentElement.setAttribute('data-theme',localStorage.getItem('replog-theme')||'dark')}catch(e){}",
+                    tagPosition: "head",
                 },
+            ],
+            link: [
+                // Self-hosted Archivo (see main.css); preloading the Latin file
+                // keeps the first paint from flashing the fallback.
                 {
-                    rel: "stylesheet",
-                    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap",
+                    rel: "preload",
+                    href: "/fonts/archivo-latin.woff2",
+                    as: "font",
+                    type: "font/woff2",
+                    crossorigin: "",
                 },
             ],
         },

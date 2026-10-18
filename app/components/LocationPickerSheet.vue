@@ -1,274 +1,215 @@
 <template>
-    <Teleport to="body">
-        <div v-if="open"
-            class="fixed inset-0 bg-black/60 backdrop-blur-xs z-110 flex items-end lg:items-center justify-center"
-            @click.self="$emit('close')">
-            <div class="bg-bg-surface border-t lg:border border-border rounded-t-[20px] lg:rounded-[20px] w-full max-w-140 flex flex-col animate-slide-up lg:animate-fade-in"
-                style="max-height: 75dvh; padding-bottom: env(safe-area-inset-bottom, 0px)">
-
-                <!-- Drag handle (mobile) -->
-                <div class="lg:hidden flex justify-center pt-3 pb-1 shrink-0">
-                    <div class="w-10 h-1 rounded-full bg-border" />
-                </div>
-
-                <!-- Header -->
-                <div class="px-4 pt-3 pb-3 border-b border-border-subtle shrink-0 flex items-center gap-2.5">
-
-                    <!-- Back button (drilled-in or container view) -->
-                    <button v-if="breadcrumb.length > 0 || viewMode === 'container'"
-                        @click="goBack"
-                        class="shrink-0 w-11 h-11 flex items-center justify-center rounded-xl bg-bg-elevated border border-border text-text-secondary hover:text-text-primary transition-all active:scale-95 cursor-pointer">
-                        <IconChevronLeft :size="18" />
-                    </button>
-
-                    <!-- Container view: box icon + container name -->
-                    <template v-if="viewMode === 'container' && activeContainer">
-                        <div class="flex-1 flex items-center gap-2 min-w-0">
-                            <IconBox :size="15" class="text-text-muted shrink-0" />
-                            <span class="text-[14px] font-semibold text-text-primary truncate">{{ activeContainer.name }}</span>
-                        </div>
-                    </template>
-
-                    <!-- Location drill-down: breadcrumb -->
-                    <template v-else-if="breadcrumb.length > 0">
-                        <div class="flex-1 flex items-center gap-1 overflow-hidden">
-                            <button @click="breadcrumb = []; viewMode = 'locations'"
-                                class="text-text-muted hover:text-text-primary text-[12px] shrink-0 cursor-pointer transition-colors">
-                                <IconHome :size="13" />
-                            </button>
-                            <template v-for="(crumb, i) in breadcrumb" :key="crumb.id">
-                                <span class="text-text-muted text-[12px] shrink-0">›</span>
-                                <button @click="navigateToCrumb(i)"
-                                    class="text-[13px] font-medium truncate cursor-pointer transition-colors"
-                                    :class="i === breadcrumb.length - 1 ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'">
-                                    {{ crumb.name }}
-                                </button>
-                            </template>
-                        </div>
-                    </template>
-
-                    <!-- Root: search input -->
-                    <template v-else>
-                        <div class="flex-1 flex items-center gap-2 bg-bg-elevated border border-border rounded-xl px-3 h-11 transition-all focus-within:border-accent focus-within:shadow-[0_0_0_3px_var(--accent-glow)]">
-                            <IconSearch :size="15" class="text-text-muted shrink-0" />
-                            <input
-                                ref="searchRef"
-                                v-model="query"
-                                type="search"
-                                placeholder="Ort suchen..."
-                                autocomplete="off"
-                                spellcheck="false"
-                                class="flex-1 bg-transparent border-none outline-none text-[14px] text-text-primary placeholder:text-text-muted"
-                            />
-                            <button v-if="query" @click="query = ''" class="text-text-muted hover:text-text-secondary cursor-pointer p-0.5">
-                                <IconX :size="13" />
-                            </button>
-                        </div>
-                    </template>
-
-                    <button @click="$emit('close')"
-                        class="bg-bg-elevated border border-border text-text-secondary w-11 h-11 rounded-xl cursor-pointer flex items-center justify-center shrink-0 transition-all active:scale-95 hover:text-text-primary">
-                        <IconX :size="18" />
-                    </button>
-                </div>
-
-                <!-- Search results (root mode only) -->
-                <div v-if="query" class="flex-1 overflow-y-auto overscroll-contain py-1.5">
-                    <template v-if="searchResults.length > 0">
-                        <button v-for="loc in searchResults" :key="loc.id"
-                            class="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer transition-all border-b border-border-subtle/50 last:border-none"
-                            :class="modelValue === loc.id ? 'bg-accent-dim' : 'hover:bg-bg-elevated active:bg-bg-hover'"
-                            @click="selectDirect(loc.id)">
-                            <span class="shrink-0" :class="modelValue === loc.id ? 'text-accent' : 'text-text-muted'">
-                                <IconMapPin :size="15" />
-                            </span>
-                            <div class="flex-1 min-w-0">
-                                <div class="text-[14px] leading-snug truncate"
-                                    :class="modelValue === loc.id ? 'text-accent font-medium' : 'text-text-primary'">
-                                    <span v-for="(part, i) in highlight(loc.name, query)" :key="i"
-                                        :class="part.match ? 'text-accent bg-accent/10 rounded-sm px-px' : ''">{{ part.text }}</span>
-                                </div>
-                                <div v-if="getLocationPath(loc.id).length > 1"
-                                    class="text-[11px] text-text-muted mt-0.5 truncate">
-                                    {{ getLocationPath(loc.id).slice(0, -1).join(' › ') }}
-                                </div>
-                            </div>
-                            <IconCheck v-if="modelValue === loc.id" :size="15" class="text-accent shrink-0" />
-                        </button>
-                    </template>
-                    <div v-else class="flex flex-col items-center justify-center py-12 gap-2 text-text-muted">
-                        <IconMapPinOff :size="32" />
-                        <span class="text-[13px]">Keine Orte gefunden</span>
-                    </div>
-                </div>
-
-                <!-- Location list (drill-down) -->
-                <div v-else-if="viewMode === 'locations'" class="flex-1 overflow-y-auto overscroll-contain py-1.5">
-
-                    <!-- Option to select the current parent location -->
-                    <button v-if="breadcrumb.length > 0"
-                        @click="selectDirect(breadcrumb[breadcrumb.length - 1].id)"
-                        class="w-full flex items-center gap-3 px-4 py-3 text-left cursor-pointer transition-all border-b border-border"
-                        :class="modelValue === breadcrumb[breadcrumb.length - 1].id ? 'bg-accent-dim text-accent' : 'hover:bg-bg-elevated text-text-secondary active:bg-bg-hover'">
-                        <IconCornerUpLeft :size="14" class="shrink-0 text-text-muted" />
-                        <span class="text-[13px] flex-1">„{{ breadcrumb[breadcrumb.length - 1].name }}" wählen</span>
-                        <IconCheck v-if="modelValue === breadcrumb[breadcrumb.length - 1].id" :size="14" class="text-accent shrink-0" />
-                    </button>
-
-                    <template v-if="currentLevelLocations.length > 0">
-                        <button v-for="loc in currentLevelLocations" :key="loc.id"
-                            class="w-full flex items-center gap-3 px-4 py-3.5 text-left cursor-pointer transition-all border-b border-border-subtle/50 last:border-none"
-                            :class="modelValue === loc.id && !loc.hasChildren && !loc.container ? 'bg-accent-dim' : 'hover:bg-bg-elevated active:bg-bg-hover'"
-                            @click="handleLocationClick(loc)">
-
-                            <!-- Type icon -->
-                            <span class="shrink-0"
-                                :class="modelValue === loc.id ? 'text-accent' : loc.container ? 'text-text-secondary' : 'text-text-muted'">
-                                <IconBox v-if="loc.container" :size="17" />
-                                <IconMapPin v-else :size="16" />
-                            </span>
-
-                            <!-- Name -->
-                            <span class="flex-1 text-[14px] truncate"
-                                :class="[
-                                    modelValue === loc.id && !loc.hasChildren && !loc.container ? 'text-accent font-medium' : 'text-text-primary',
-                                    loc.container ? 'font-medium' : ''
-                                ]">
-                                {{ loc.name }}
-                            </span>
-
-                            <!-- Checkmark (leaf, selected) -->
-                            <IconCheck v-if="modelValue === loc.id && !loc.hasChildren && !loc.container" :size="15"
-                                class="text-accent shrink-0" />
-                            <!-- Chevron (has children or container) -->
-                            <IconChevronRight v-else-if="loc.hasChildren || loc.container" :size="15"
-                                class="text-text-muted shrink-0" />
-                        </button>
-                    </template>
-
-                    <div v-else class="flex flex-col items-center justify-center py-12 gap-2 text-text-muted">
-                        <IconMapPinOff :size="28" />
-                        <span class="text-[13px]">Keine Orte vorhanden</span>
-                    </div>
-                </div>
-
-                <!-- Container zone picker -->
-                <div v-else-if="viewMode === 'container' && activeContainer"
-                    class="flex-1 overflow-y-auto overscroll-contain p-4 flex flex-col gap-3">
-                    <p class="text-[12px] text-text-muted">Zone auswählen:</p>
-                    <div class="w-full rounded-xl overflow-hidden border border-border bg-bg-elevated"
-                        :style="{ aspectRatio: `${activeContainer.dimensions.width} / ${activeContainer.dimensions.height}` }">
-                        <ContainerZonePickerNode
-                            :node="activeContainer.rootNode"
-                            :selected-id="modelValue"
-                            @select="selectZone"
-                        />
-                    </div>
-                </div>
-
+    <UiSheet v-if="open" nested max-height="85dvh" :title="title" @close="$emit('close')">
+        <template #header>
+            <UiIconButton v-if="breadcrumb.length || activeContainer" :icon="ChevronLeft" label="Zurück"
+                @click="goBack" />
+            <div class="flex-1 min-w-0">
+                <h2 class="font-name text-title-md text-text-primary truncate">
+                    {{ activeContainer ? activeContainer.name : breadcrumb.length ? breadcrumb.at(-1)!.name : title }}
+                </h2>
+                <p v-if="breadcrumb.length || activeContainer" class="text-meta text-text-muted truncate">
+                    {{ activeContainer ? 'Fach wählen' : title }}
+                </p>
             </div>
+        </template>
+
+        <div class="flex flex-col gap-4 px-4 pb-5 pt-1">
+
+            <!-- Search, only at the top level -->
+            <label v-if="!breadcrumb.length && !activeContainer"
+                class="flex items-center gap-2 h-12 pl-4 pr-1 rounded-lg bg-bg-elevated border border-border text-text-muted transition-[border-color,box-shadow] focus-within:border-accent focus-within:shadow-[0_0_0_3px_var(--accent-glow)]">
+                <Search :size="18" class="shrink-0" />
+                <input ref="searchRef" v-model="query" type="search" enterkeyhint="search" placeholder="Ort suchen"
+                    aria-label="Ort suchen" autocomplete="off" spellcheck="false"
+                    class="flex-1 min-w-0 bg-transparent border-none outline-none text-body text-text-primary placeholder:text-text-muted" />
+                <UiIconButton v-if="query" :icon="X" label="Suche leeren" variant="plain" :icon-size="18"
+                    @click="query = ''" />
+            </label>
+
+            <!-- Search results -->
+            <section v-if="query" class="flex flex-col">
+                <button v-for="loc in searchResults" :key="loc.id" type="button" class="picker-row"
+                    :class="rowState(loc.id)" @click="pick(loc.id)">
+                    <LocationGlyph :container="containerOf(loc.id)" :own="countsOf(loc.id).own"
+                        :child-count="childrenOf(loc.id).length" :size="40" />
+                    <span class="flex-1 min-w-0">
+                        <span class="block text-label font-medium truncate">
+                            <span v-for="(part, i) in highlightParts(loc.name, query)" :key="i"
+                                :class="part.match ? 'text-accent-text bg-accent-dim rounded-[3px]' : ''">{{ part.text }}</span>
+                        </span>
+                        <span v-if="parentPath(loc.id)" class="block text-meta text-text-muted truncate">
+                            {{ parentPath(loc.id) }}
+                        </span>
+                    </span>
+                    <Check v-if="modelValue === loc.id" :size="18" class="text-accent-text shrink-0" />
+                </button>
+                <p v-if="!searchResults.length" class="py-10 text-center text-meta text-text-muted">
+                    Kein Ort heißt „{{ query }}“.
+                </p>
+            </section>
+
+            <!-- Container: pick a compartment, or the container itself -->
+            <section v-else-if="activeContainer" class="flex flex-col gap-3">
+                <div class="w-full rounded-lg overflow-hidden border border-border bg-bg-elevated"
+                    :style="{ aspectRatio: `${activeContainer.dimensions.width} / ${activeContainer.dimensions.height}`, maxHeight: '46dvh' }">
+                    <ContainerZonePickerNode :node="activeContainer.rootNode" :selected-id="modelValue"
+                        @select="pick" />
+                </div>
+                <UiButton variant="secondary" block @click="pick(activeContainer.locationId)">
+                    Direkt in „{{ activeContainer.name }}“
+                </UiButton>
+            </section>
+
+            <template v-else>
+                <!-- Where things went last: the usual answer, one tap away -->
+                <section v-if="!breadcrumb.length && recent.length" class="flex flex-col">
+                    <h3 class="eyebrow px-1 pb-1">Zuletzt</h3>
+                    <button v-for="loc in recent" :key="loc.id" type="button" class="picker-row"
+                        :class="rowState(loc.id)" @click="pick(loc.id)">
+                        <LocationGlyph :container="containerOf(loc.id)" :own="countsOf(loc.id).own"
+                            :child-count="childrenOf(loc.id).length" :size="40" />
+                        <span class="flex-1 min-w-0">
+                            <span class="block text-label font-medium truncate">{{ loc.name }}</span>
+                            <span v-if="parentPath(loc.id)" class="block text-meta text-text-muted truncate">
+                                {{ parentPath(loc.id) }}
+                            </span>
+                        </span>
+                        <Check v-if="modelValue === loc.id" :size="18" class="text-accent-text shrink-0" />
+                    </button>
+                </section>
+
+                <section class="flex flex-col">
+                    <h3 v-if="!breadcrumb.length" class="eyebrow px-1 pb-1">Alle Orte</h3>
+
+                    <button v-if="allowRoot && !breadcrumb.length" type="button" class="picker-row"
+                        :class="rowState('')" @click="pick('')">
+                        <span class="size-10 shrink-0 rounded-sm bg-bg-elevated border border-border flex items-center justify-center text-text-muted">
+                            <House :size="18" />
+                        </span>
+                        <span class="flex-1 text-label font-medium">Oberste Ebene</span>
+                        <Check v-if="modelValue === ''" :size="18" class="text-accent-text shrink-0" />
+                    </button>
+
+                    <!-- Inside a place: choose the place itself before going deeper -->
+                    <button v-if="breadcrumb.length" type="button" class="picker-row" :class="rowState(breadcrumb.at(-1)!.id)"
+                        @click="pick(breadcrumb.at(-1)!.id)">
+                        <span class="size-10 shrink-0 rounded-sm bg-accent-dim flex items-center justify-center text-accent-text">
+                            <CornerDownRight :size="18" />
+                        </span>
+                        <span class="flex-1 text-label font-medium">Direkt in „{{ breadcrumb.at(-1)!.name }}“</span>
+                        <Check v-if="modelValue === breadcrumb.at(-1)!.id" :size="18" class="text-accent-text shrink-0" />
+                    </button>
+
+                    <button v-for="loc in level" :key="loc.id" type="button" class="picker-row"
+                        :class="rowState(loc.id, loc.goesDeeper)" @click="open_(loc)">
+                        <LocationGlyph :container="loc.container" :own="countsOf(loc.id).own"
+                            :child-count="childrenOf(loc.id).length" :size="40" />
+                        <span class="flex-1 min-w-0 text-label font-medium truncate">{{ loc.name }}</span>
+                        <ChevronRight v-if="loc.goesDeeper" :size="18" class="text-text-muted shrink-0" />
+                        <Check v-else-if="modelValue === loc.id" :size="18" class="text-accent-text shrink-0" />
+                    </button>
+
+                    <p v-if="!level.length && !breadcrumb.length" class="py-10 text-center text-meta text-text-muted">
+                        Noch keine Orte.
+                    </p>
+                </section>
+            </template>
         </div>
-    </Teleport>
+    </UiSheet>
 </template>
 
 <script setup lang="ts">
-import { useLocations } from "~/composables/useLocations"
-import { useContainers } from "~/composables/useContainers"
+import { Check, ChevronLeft, ChevronRight, CornerDownRight, House, Search, X } from "lucide-vue-next"
 import type { Container } from "~/types/container"
+import { highlightParts } from "~/utils/highlight"
 
-const props = defineProps<{
+/**
+ * Choose a place. Recent places come first, so the usual answer is one tap.
+ * Tapping a place without anything below it picks it and closes the sheet.
+ */
+const props = withDefaults(defineProps<{
     open: boolean
     modelValue: string
-}>()
+    title?: string
+    /** Offer "Oberste Ebene" (emits an empty id), for parents of places. */
+    allowRoot?: boolean
+}>(), {
+    title: "Ort wählen",
+    allowRoot: false,
+})
 
 const emit = defineEmits<{
     close: []
     "update:modelValue": [id: string]
 }>()
 
-const { locations, flatList, getLocationPath } = useLocations()
-const { containers } = useContainers()
+const { locations } = useLocations()
+const { containerOf, countsOf, childrenOf, zoneLocationIds, ancestorsOf } = useTopology()
+const { resolve } = useRecentLocations()
 
 const searchRef = ref<HTMLInputElement>()
 const query = ref("")
 const breadcrumb = ref<{ id: string; name: string }[]>([])
-const viewMode = ref<"locations" | "container">("locations")
 const activeContainer = ref<Container | null>(null)
 
-const currentParentId = computed(() =>
-    breadcrumb.value.length > 0 ? breadcrumb.value[breadcrumb.value.length - 1].id : null
-)
+const recent = computed(() => resolve(locations.value).slice(0, 4))
 
-const currentLevelLocations = computed(() => {
-    return locations.value
-        .filter((l) => l.parentId === currentParentId.value)
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((loc) => {
-            const container = containers.value.find((c) => c.locationId === loc.id)
-            const hasChildren = !container && locations.value.some((l) => l.parentId === loc.id)
-            return { ...loc, container, hasChildren }
+const level = computed(() => {
+    const parentId = breadcrumb.value.at(-1)?.id ?? null
+    return childrenOf(parentId)
+        .filter((l) => !zoneLocationIds.value.has(l.id))
+        .sort((a, b) => a.name.localeCompare(b.name, "de"))
+        .map((l) => {
+            const container = containerOf(l.id)
+            return { ...l, container, goesDeeper: !!container || childrenOf(l.id).length > 0 }
         })
 })
 
 const searchResults = computed(() => {
-    if (!query.value) return []
-    const q = query.value.toLowerCase()
-    return flatList.value.filter((l) => l.name.toLowerCase().includes(q))
+    const q = query.value.trim().toLowerCase()
+    if (!q) return []
+    return locations.value
+        .filter((l) => l.name.toLowerCase().includes(q))
+        .sort((a, b) => a.name.localeCompare(b.name, "de"))
+        .slice(0, 30)
 })
 
-function handleLocationClick(loc: { id: string; name: string; container?: Container; hasChildren: boolean }) {
-    if (loc.container) {
-        activeContainer.value = loc.container
-        viewMode.value = "container"
-    } else if (loc.hasChildren) {
-        breadcrumb.value = [...breadcrumb.value, { id: loc.id, name: loc.name }]
-    } else {
-        selectDirect(loc.id)
-    }
+function parentPath(id: string): string {
+    return ancestorsOf(id).slice(0, -1).map((l) => l.name).join(" › ")
+}
+
+function rowState(id: string, goesDeeper = false): string {
+    return props.modelValue === id && !goesDeeper ? "bg-accent-dim text-accent-text" : "text-text-primary"
+}
+
+function open_(loc: { id: string; name: string; container?: Container; goesDeeper: boolean }) {
+    if (loc.container) activeContainer.value = loc.container
+    else if (loc.goesDeeper) breadcrumb.value = [...breadcrumb.value, { id: loc.id, name: loc.name }]
+    else pick(loc.id)
 }
 
 function goBack() {
-    if (viewMode.value === "container") {
-        viewMode.value = "locations"
-        activeContainer.value = null
-    } else {
-        breadcrumb.value = breadcrumb.value.slice(0, -1)
-    }
+    if (activeContainer.value) activeContainer.value = null
+    else breadcrumb.value = breadcrumb.value.slice(0, -1)
 }
 
-function navigateToCrumb(index: number) {
-    breadcrumb.value = breadcrumb.value.slice(0, index + 1)
-    viewMode.value = "locations"
-    activeContainer.value = null
-}
-
-function selectDirect(id: string) {
+function pick(id: string) {
     emit("update:modelValue", id)
     emit("close")
 }
 
-function selectZone(locationId: string) {
-    emit("update:modelValue", locationId)
-    emit("close")
-}
-
-function highlight(name: string, q: string) {
-    const idx = name.toLowerCase().indexOf(q.toLowerCase())
-    if (idx === -1) return [{ text: name, match: false }]
-    return [
-        { text: name.slice(0, idx), match: false },
-        { text: name.slice(idx, idx + q.length), match: true },
-        { text: name.slice(idx + q.length), match: false },
-    ].filter((p) => p.text)
-}
-
 watch(() => props.open, (v) => {
-    if (v) {
-        query.value = ""
-        breadcrumb.value = []
-        viewMode.value = "locations"
-        activeContainer.value = null
-        nextTick(() => searchRef.value?.focus())
-    }
+    if (!v) return
+    query.value = ""
+    breadcrumb.value = []
+    activeContainer.value = null
 })
 </script>
+
+<style scoped>
+@reference "../assets/css/main.css";
+
+.picker-row {
+    @apply flex items-center gap-3 w-full min-h-14 px-2 py-2 rounded-md text-left cursor-pointer transition-colors hover:bg-bg-elevated active:bg-bg-hover;
+}
+</style>

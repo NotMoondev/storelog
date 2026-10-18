@@ -6,34 +6,33 @@
             <ContainerZonePickerNode :node="node.children[0]" :selected-id="selectedId"
                 @select="$emit('select', $event)" />
         </div>
-        <div class="shrink-0 bg-border/60" :class="node.type === 'vsplit' ? 'w-px' : 'h-px'" />
+        <div class="shrink-0 bg-text-muted/35" :class="node.type === 'vsplit' ? 'w-px' : 'h-px'" />
         <div class="overflow-hidden relative flex-1">
             <ContainerZonePickerNode :node="node.children[1]" :selected-id="selectedId"
                 @select="$emit('select', $event)" />
         </div>
     </div>
 
-    <!-- Leaf node -->
+    <!-- Leaf node: tapping a compartment picks it -->
     <button v-else type="button"
-        class="w-full h-full flex flex-col items-center justify-center gap-1 p-2 transition-colors"
+        class="w-full h-full min-h-11 flex flex-col items-center justify-center gap-1 p-2 transition-colors"
         :class="[
             node.locationId ? 'cursor-pointer' : 'cursor-default opacity-30',
-            node.locationId && selectedId === node.locationId
-                ? 'bg-accent-dim'
-                : node.locationId ? 'hover:bg-bg-hover active:bg-bg-elevated' : ''
-        ]"
-        :disabled="!node.locationId"
-        @click="node.locationId && $emit('select', node.locationId)"
-    >
-        <span class="text-[11px] leading-tight text-center select-none"
-            :class="node.locationId && selectedId === node.locationId ? 'text-accent font-medium' : 'text-text-muted'">
+            isSelected
+                ? 'bg-accent-dim shadow-[inset_0_0_0_2px_var(--accent)]'
+                : node.locationId ? 'hover:bg-bg-hover active:bg-bg-hover' : ''
+        ]" :aria-pressed="isSelected" :disabled="!node.locationId"
+        @click="node.locationId && $emit('select', node.locationId)">
+        <span class="text-caption text-center select-none"
+            :class="isSelected ? 'text-accent-text font-semibold' : 'text-text-secondary font-medium'">
             {{ node.name }}
         </span>
-        <IconCheck v-if="node.locationId && selectedId === node.locationId" :size="11" class="text-accent" />
+        <Check v-if="isSelected" :size="16" class="text-accent-text" />
     </button>
 </template>
 
 <script setup lang="ts">
+import { Check } from 'lucide-vue-next'
 import type { ContainerNode } from '~/types/container'
 
 const props = defineProps<{
@@ -42,6 +41,10 @@ const props = defineProps<{
 }>()
 
 defineEmits<{ select: [locationId: string] }>()
+
+const isSelected = computed(() =>
+    props.node.type === 'leaf' && !!props.node.locationId && props.selectedId === props.node.locationId
+)
 
 const childAStyle = computed(() => {
     if (props.node.type === 'leaf') return {}

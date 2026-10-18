@@ -63,6 +63,26 @@ export function useItems() {
     items.value = await itemRepository.getAll()
   }
 
+  /**
+   * Delete several at once and hand back what was removed, so the toast's
+   * "Rückgängig" can put them back with `restoreItems`.
+   */
+  async function deleteItems(ids: string[]): Promise<Item[]> {
+    const target = new Set(ids)
+    const removed = items.value.filter((i) => target.has(i.id))
+    await Promise.all(ids.map((id) => itemRepository.delete(id)))
+    items.value = await itemRepository.getAll()
+    return removed
+  }
+
+  /** Re-create deleted items. They get new ids; name, place and note survive. */
+  async function restoreItems(removed: Item[]): Promise<void> {
+    await Promise.all(
+      removed.map((i) => itemRepository.create({ name: i.name, locationId: i.locationId, note: i.note }))
+    )
+    items.value = await itemRepository.getAll()
+  }
+
   return {
     items,
     loading,
@@ -73,5 +93,7 @@ export function useItems() {
     moveItem,
     moveItems,
     deleteItem,
+    deleteItems,
+    restoreItems,
   }
 }

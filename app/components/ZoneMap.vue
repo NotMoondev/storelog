@@ -37,8 +37,8 @@ const showLabels = computed(() => props.labels ?? !props.compact)
 
 const frameClass = computed(() =>
     props.compact
-        ? "rounded-md border border-border"
-        : "rounded-xl border border-border"
+        ? "rounded-sm border border-border"
+        : "rounded-lg border border-border"
 )
 
 /**
