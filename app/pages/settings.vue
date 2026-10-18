@@ -9,6 +9,50 @@
         <!-- Body -->
         <div class="flex-1 overflow-y-auto px-4 pt-5 pb-15 flex flex-col gap-7">
 
+            <!-- Section: Benutzer -->
+            <div class="flex flex-col gap-2">
+                <div class="text-[11px] text-text-muted tracking-widest uppercase px-1">Benutzer</div>
+
+                <div class="bg-bg-surface border border-border rounded-2xl p-4 space-y-4">
+                    <div>
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <UserBadge v-if="currentUser" :user-id="currentUser.id" :show-name="false" size="sm" />
+                            <h2 class="font-medium text-text-primary truncate">
+                                {{ currentUser?.name ?? 'Kein Name gesetzt' }}
+                            </h2>
+                        </div>
+                        <p class="text-sm text-text-muted mt-2">
+                            Dein Name wird bei allem gespeichert, was du hinzufügst oder bearbeitest.
+                            Gib denselben Namen auf einem anderen Gerät ein, um dort als dieselbe
+                            Person weiterzuarbeiten.
+                        </p>
+                    </div>
+
+                    <button @click="switchUserOpen = true" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm
+                        bg-bg-elevated border border-border text-text-secondary
+                        cursor-pointer transition-all duration-150
+                        hover:bg-accent-dim hover:border-accent/40 hover:text-accent">
+                        <IconRepeat2 class="size-5" />
+                        Name ändern
+                    </button>
+
+                    <!-- Everyone who has used this log -->
+                    <div v-if="userStats.length" class="space-y-2 pt-1">
+                        <div class="text-[11px] text-text-muted tracking-widest uppercase">Alle Namen</div>
+                        <div v-for="user in userStats" :key="user.id"
+                            class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl border"
+                            :class="user.id === currentUser?.id ? 'bg-accent-dim border-accent/40' : 'bg-bg-elevated border-border-subtle'">
+                            <UserBadge :user-id="user.id" :show-name="false" size="sm" />
+                            <span class="flex-1 min-w-0 truncate text-sm text-text-primary">{{ user.name }}</span>
+                            <span class="text-xs text-text-muted shrink-0 tabular-nums">
+                                {{ user.itemCount }} Gegenst{{ user.itemCount === 1 ? 'and' : 'ände' }}
+                                · {{ user.locationCount }} Ort{{ user.locationCount !== 1 ? 'e' : '' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Section: Theme -->
             <div class="bg-bg-surface border border-border rounded-2xl p-4 space-y-3">
                 <div>
@@ -100,6 +144,8 @@
 
         </div>
 
+        <UserSetupSheet v-if="switchUserOpen" mode="switch" @close="switchUserOpen = false" />
+
         <!-- Toast -->
         <Transition enter-active-class="transition-[opacity,transform] duration-200 ease-out"
             leave-active-class="transition-[opacity,transform] duration-200 ease-out"
@@ -124,9 +170,21 @@ const { exportData, importData, pickFile, exporting, importing } = useDataTransf
 const { items, load: loadItems } = useItems()
 const { locations, load: loadLocations } = useLocations()
 const { theme, setTheme } = useTheme()
+const { currentUser, users, loadUsers } = useUser()
+
+const switchUserOpen = ref(false)
 
 const itemCount = computed(() => items.value.length)
 const locationCount = computed(() => locations.value.length)
+
+/** How much each name has contributed – counted client-side from loaded data. */
+const userStats = computed(() =>
+    users.value.map(user => ({
+        ...user,
+        itemCount: items.value.filter(i => i.createdBy === user.id).length,
+        locationCount: locations.value.filter(l => l.createdBy === user.id).length,
+    }))
+)
 
 const { public: { appVersion } } = useRuntimeConfig()
 
@@ -168,7 +226,7 @@ async function handleImport() {
         const confirmed = confirm('Alle vorhandenen Daten werden überschrieben. Fortfahren?')
         if (!confirmed) return
         await importData(file)
-        await Promise.all([loadItems(), loadLocations()])
+        await Promise.all([loadItems(), loadLocations(), loadUsers()])
         showToast('Daten erfolgreich importiert.', 'success')
     } catch (e) {
         if (e instanceof Error && e.message !== 'Keine Datei ausgewählt.') {
@@ -180,5 +238,6 @@ async function handleImport() {
 onMounted(() => {
     loadItems()
     loadLocations()
+    loadUsers().catch(() => { /* offline – the list stays empty */ })
 })
 </script>

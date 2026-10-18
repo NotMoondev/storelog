@@ -13,6 +13,12 @@ Hierarchische Struktur von Orten, z. B. Zimmer → Schrank → Schublade → Box
 ### Schnelles Hinzufügen
 Gegenstände können mit minimalem Aufwand erfasst werden: Name eingeben, Ort auswählen, speichern.
 
+### Benutzer ohne Login
+Beim ersten Start gibt man einmalig einen Namen ein – kein Konto, kein Passwort.
+Jeder Gegenstand, Ort und Container speichert, wer ihn erstellt und wer ihn zuletzt
+bearbeitet hat. Auf einem weiteren Gerät genügt derselbe Name, um dort als dieselbe
+Person weiterzuarbeiten. Groß- und Kleinschreibung spielt dabei keine Rolle.
+
 ### Offline-Nutzung
 Die Anwendung funktioniert vollständig ohne Internetverbindung. Alle Daten werden lokal gespeichert.
 
@@ -28,6 +34,41 @@ Export und Import der Daten im JSON-Format zur Sicherung und Wiederherstellung.
 bun install
 bun run dev
 ```
+
+## Self-Hosting mit Docker
+
+Die App kann auf einem Homeserver als Docker-Container betrieben werden. Daten werden in einer SQLite-Datenbank auf dem Host gespeichert.
+
+### Schnellstart mit Docker Compose
+
+```bash
+docker compose up -d
+```
+
+Die App ist danach unter `http://<server-ip>:3000` erreichbar. Die Daten werden im Docker-Volume `storelog-data` persistiert.
+
+### Image manuell bauen und starten
+
+```bash
+# Image bauen
+docker build -t storelog .
+
+# Container starten (Daten in lokalem Verzeichnis ./data)
+docker run -d \
+  --name storelog \
+  -p 3000:3000 \
+  -v $(pwd)/data:/data \
+  --restart unless-stopped \
+  storelog
+```
+
+### Port anpassen
+
+In `docker-compose.yml` den Port unter `ports` anpassen, z.B. `"8080:3000"` für Port 8080.
+
+### Datensicherung
+
+Die SQLite-Datei liegt im gemounteten Volume unter `/data/storelog.db`. Diese Datei einfach kopieren oder sichern.
 
 ## Lizenz
 

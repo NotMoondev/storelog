@@ -1,11 +1,22 @@
 import { containerRepository, makeLeaf, collectLeaves, replaceNode, buildGridTree } from "~/repositories/containerRepository"
 import type { Container, ContainerNode, ContainerDimensions } from "~/types/container"
 
+/**
+ * Guards the initial fetch. `useContainers()` is called from many components at
+ * once; without this every one of them would trigger its own request.
+ */
+let initialLoad: Promise<void> | null = null
+
 export function useContainers() {
     const containers = useState<Container[]>("containers", () => [])
 
     async function load() {
         containers.value = await containerRepository.getAll()
+    }
+
+    function ensureLoaded(): Promise<void> {
+        if (!initialLoad) initialLoad = load()
+        return initialLoad
     }
 
     async function createContainer(
@@ -44,11 +55,12 @@ export function useContainers() {
         return containers.value.find((c) => c.locationId === locationId)
     }
 
-    onMounted(() => load())
+    onMounted(() => { ensureLoaded() })
 
     return {
         containers,
         load,
+        ensureLoaded,
         createContainer,
         saveContainerTree,
         renameZone,

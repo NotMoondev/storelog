@@ -1,5 +1,7 @@
 import { itemRepository } from "~/repositories/itemRepository"
-import type { Item, ItemWithPath } from "~/types"
+import type { Item } from "~/types"
+
+let initialLoad: Promise<void> | null = null
 
 export function useItems() {
   const items = useState<Item[]>("items", () => [])
@@ -12,6 +14,12 @@ export function useItems() {
     } finally {
       loading.value = false
     }
+  }
+
+  /** Fetch once per session, no matter how many components ask. */
+  function ensureLoaded(): Promise<void> {
+    if (!initialLoad) initialLoad = load()
+    return initialLoad
   }
 
   async function createItem(data: Omit<Item, "id" | "createdAt">): Promise<Item> {
@@ -28,6 +36,28 @@ export function useItems() {
     items.value = await itemRepository.getAll()
   }
 
+  /**
+   * Moving is the action people repeat most, so it lands locally first and the
+   * request follows. On failure the previous state is put back.
+   */
+  async function moveItems(ids: string[], locationId: string): Promise<void> {
+    if (!ids.length) return
+    const previous = items.value
+    const target = new Set(ids)
+    items.value = items.value.map((i) => (target.has(i.id) ? { ...i, locationId } : i))
+    try {
+      await Promise.all(ids.map((id) => itemRepository.update(id, { locationId })))
+      items.value = await itemRepository.getAll()
+    } catch (err) {
+      items.value = previous
+      throw err
+    }
+  }
+
+  function moveItem(id: string, locationId: string): Promise<void> {
+    return moveItems([id], locationId)
+  }
+
   async function deleteItem(id: string): Promise<void> {
     await itemRepository.delete(id)
     items.value = await itemRepository.getAll()
@@ -37,8 +67,11 @@ export function useItems() {
     items,
     loading,
     load,
+    ensureLoaded,
     createItem,
     updateItem,
+    moveItem,
+    moveItems,
     deleteItem,
   }
 }
